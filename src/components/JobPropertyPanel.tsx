@@ -253,6 +253,73 @@ export function JobPropertyPanel({
             </ul>
           )}
         </div>
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs font-medium text-slate-500">Environment Variables</label>
+            <button
+              type="button"
+              onClick={() => {
+                const currentEnv = job.env ?? {}
+                const newEnv = { ...currentEnv, '': '' }
+                setJobField('env', newEnv)
+              }}
+              className="rounded border border-slate-300 bg-white px-2 py-1 text-xs text-slate-600 hover:bg-slate-50"
+            >
+              + Add variable
+            </button>
+          </div>
+          {!job.env || Object.keys(job.env).length === 0 ? (
+            <p className="text-xs text-slate-500 italic">No environment variables configured</p>
+          ) : (
+            <div className="space-y-1.5">
+              {Object.entries(job.env).map(([key, value]) => (
+                <div key={key} className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={key}
+                    onChange={(e) => {
+                      const currentEnv = job.env ?? {}
+                      const newEnv = { ...currentEnv }
+                      delete newEnv[key]
+                      newEnv[e.target.value] = value
+                      setJobField('env', Object.keys(newEnv).length > 0 ? newEnv : undefined)
+                    }}
+                    className="flex-1 rounded border border-slate-300 px-2 py-1 text-sm"
+                    placeholder="Variable name"
+                  />
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => {
+                      const currentEnv = job.env ?? {}
+                      const newEnv = { ...currentEnv }
+                      if (e.target.value === '') {
+                        delete newEnv[key]
+                      } else {
+                        newEnv[key] = e.target.value
+                      }
+                      setJobField('env', Object.keys(newEnv).length > 0 ? newEnv : undefined)
+                    }}
+                    className="flex-1 rounded border border-slate-300 px-2 py-1 text-sm"
+                    placeholder="Value"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentEnv = job.env ?? {}
+                      const newEnv = { ...currentEnv }
+                      delete newEnv[key]
+                      setJobField('env', Object.keys(newEnv).length > 0 ? newEnv : undefined)
+                    }}
+                    className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-600 shrink-0"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div>
           <div className="flex items-center justify-between mb-2">

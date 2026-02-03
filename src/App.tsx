@@ -12,6 +12,7 @@ import { JobNode } from '@/components/JobNode'
 import { JobPropertyPanel } from '@/components/JobPropertyPanel'
 import { TriggerNode } from '@/components/TriggerNode'
 import { TriggerPropertyPanel } from '@/components/TriggerPropertyPanel'
+import { WorkflowPropertyPanel } from '@/components/WorkflowPropertyPanel'
 import { PasteYamlDialog } from '@/components/PasteYamlDialog'
 import { SourceCodeDialog } from '@/components/SourceCodeDialog'
 import { openWorkflowFromYaml, saveWorkflowToFile } from '@/lib/fileHandling'
@@ -43,6 +44,7 @@ function AppInner() {
   const [workflow, setWorkflow] = useState<Workflow | null>(sampleWorkflow)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
+  const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
   const [parseErrors, setParseErrors] = useState<string[]>([])
   const [lintErrors, setLintErrors] = useState<LintError[]>([])
   const [showPasteDialog, setShowPasteDialog] = useState(false)
@@ -294,8 +296,14 @@ function AppInner() {
       <header className="flex flex-wrap items-center gap-4 border-b border-slate-200 bg-white px-4 py-2 shadow-sm">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold text-slate-800">GitHub Actions GUI</h1>
-          {workflow?.name && (
-            <span className="text-sm text-slate-500">{workflow.name}</span>
+          {workflow && (
+            <button
+              type="button"
+              onClick={() => setShowWorkflowProperties(true)}
+              className="text-sm text-slate-500 hover:text-slate-700 hover:underline"
+            >
+              {workflow.name || 'Untitled Workflow'}
+            </button>
           )}
         </div>
         <div className="h-6 w-px bg-slate-200" aria-hidden />
@@ -429,7 +437,21 @@ function AppInner() {
             </div>
           )}
         </div>
-        {selectedTrigger && workflow && (
+        {showWorkflowProperties && workflow && (
+          <WorkflowPropertyPanel
+            workflow={workflow}
+            onWorkflowChange={(w) => {
+              isUpdatingWorkflowRef.current = true
+              setWorkflow(w)
+              // Reset flag after a brief delay to allow React Flow to update
+              setTimeout(() => {
+                isUpdatingWorkflowRef.current = false
+              }, 100)
+            }}
+            onClose={() => setShowWorkflowProperties(false)}
+          />
+        )}
+        {selectedTrigger && workflow && !showWorkflowProperties && (
           <TriggerPropertyPanel
             workflow={workflow}
             onWorkflowChange={(w) => {
@@ -443,7 +465,7 @@ function AppInner() {
             onClose={() => setSelectedTrigger(false)}
           />
         )}
-        {selectedJobId && workflow && !selectedTrigger && (
+        {selectedJobId && workflow && !selectedTrigger && !showWorkflowProperties && (
           <JobPropertyPanel
             workflow={workflow}
             jobId={selectedJobId}
