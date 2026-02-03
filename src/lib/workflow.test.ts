@@ -88,6 +88,49 @@ describe('parseWorkflow', () => {
     expect(errors.some((e) => e.includes('jobs'))).toBe(true)
     expect(workflow.jobs).toEqual({})
   })
+
+  it('returns invalid workflow error for non-object root', () => {
+    const { workflow, errors } = parseWorkflow('42')
+    expect(errors).toContain('Invalid workflow: root must be an object')
+    expect(workflow.jobs).toEqual({})
+  })
+
+  it('parses job with strategy matrix', () => {
+    const yaml = `
+name: Matrix
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20]
+      fail-fast: false
+    steps:
+      - run: echo build
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.build.strategy?.matrix).toEqual({ node: [18, 20] })
+    expect(workflow.jobs.build.strategy?.['fail-fast']).toBe(false)
+  })
+
+  it('normalizes invalid job entry to error', () => {
+    const yaml = `
+name: Bad job
+on: push
+jobs:
+  good:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ok
+  bad: "not an object"
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors.some((e) => e.includes('Job "bad"'))).toBe(true)
+    expect(workflow.jobs.good).toBeDefined()
+    expect(workflow.jobs.bad).toBeUndefined()
+  })
 })
 
 describe('serializeWorkflow', () => {
@@ -123,5 +166,22 @@ describe('serializeWorkflow', () => {
     expect(errors).toEqual([])
     expect(again.jobs.deploy.steps[1].with).toEqual({ 'node-version': 24 })
     expect(again.jobs.deploy.steps[2].run).toBe('pnpm build')
+  })
+
+  it('serializes workflow with strategy', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    workflow.jobs.build.strategy = {
+      matrix: { node: ['18', '20'] },
+      'fail-fast': true,
+      'max-parallel': 3,
+    }
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('matrix')
+    expect(yaml).toContain('fail-fast')
+    expect(yaml).toContain('max-parallel')
+    const { workflow: again } = parseWorkflow(yaml)
+    expect(again.jobs.build.strategy?.matrix).toEqual({ node: ['18', '20'] })
+    expect(again.jobs.build.strategy?.['fail-fast']).toBe(true)
+    expect(again.jobs.build.strategy?.['max-parallel']).toBe(3)
   })
 })

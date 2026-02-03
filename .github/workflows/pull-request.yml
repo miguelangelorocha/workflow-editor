@@ -55,8 +55,19 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      - name: Test
-        run: pnpm test
+      - name: Test with coverage
+        run: pnpm test:coverage
+
+      - name: Report coverage percentage
+        run: |
+          LINES=$(jq -r '.total.lines.pct' coverage/coverage-summary.json)
+          STATEMENTS=$(jq -r '.total.statements.pct' coverage/coverage-summary.json)
+          echo "## Test coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Lines** | ${LINES}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Statements** | ${STATEMENTS}% |" >> $GITHUB_STEP_SUMMARY
 
       - name: Build
         run: pnpm build

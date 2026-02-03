@@ -7,6 +7,12 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'html', 'json-summary'],
+      include: ['src/lib/**/*.ts', 'src/types/**/*.ts'],
+      exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/main.tsx', 'src/App.tsx', 'src/vite-env.d.ts'],
+    },
   },
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
