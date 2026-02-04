@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/timoa/github-actions-gui/compare/v1.0.1...v1.0.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* **cicd:** migrate from Semantic Release packages to GitHub Actions ([8514029](https://github.com/timoa/github-actions-gui/commit/8514029a0554aeac45999bca864ac6fb9a0636d0))
+
 ## [1.0.1](https://github.com/timoa/github-actions-gui/compare/v1.0.0...v1.0.1) (2026-02-03)
 
 
