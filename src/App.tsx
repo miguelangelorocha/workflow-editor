@@ -50,7 +50,7 @@ const sampleWorkflow: Workflow = {
 }
 
 function AppInner() {
-  const [workflow, setWorkflow] = useState<Workflow | null>(sampleWorkflow)
+  const [workflow, setWorkflow] = useState<Workflow | null>(null)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
   const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
@@ -262,6 +262,11 @@ function AppInner() {
         return
       }
 
+      // Check if workflow has triggers, if not, create a default push trigger
+      const triggers = parseTriggers(workflow.on)
+      const needsTrigger = triggers.length === 0
+      const updatedOn = needsTrigger ? { push: { branches: ['main'] } } : workflow.on
+
       const existingIds = Object.keys(workflow.jobs)
       const jobId = generateUniqueJobId(existingIds)
       const newJob: Workflow['jobs'][string] = {
@@ -275,6 +280,7 @@ function AppInner() {
       isUpdatingWorkflowRef.current = true
       setWorkflow({
         ...workflow,
+        on: updatedOn,
         jobs: {
           ...workflow.jobs,
           [jobId]: newJob,
@@ -301,6 +307,11 @@ function AppInner() {
   )
 
   const hasJobs = nodes.some((n) => n.type === 'job')
+  const hasTriggers = workflow && workflow.on && 
+    (typeof workflow.on === 'string' || 
+     (Array.isArray(workflow.on) && workflow.on.length > 0) ||
+     (typeof workflow.on === 'object' && Object.keys(workflow.on).length > 0))
+  const hasContent = hasJobs || hasTriggers
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -491,7 +502,7 @@ function AppInner() {
       )}
       <main className="flex-1 overflow-hidden flex" role="main" aria-label="Workflow diagram">
         <div className="flex-1 relative">
-          {hasJobs ? (
+          {hasContent ? (
             <ReactFlow
               key={workflow ? `flow-on-${JSON.stringify(workflow.on)}` : 'flow'}
               nodes={nodes}
