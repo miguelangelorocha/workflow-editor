@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/timoa/github-actions-gui/compare/v1.0.4...v1.1.0) (2026-02-04)
+
+
+### Features
+
+* **ui:** add Light/Dark mode + fix a few bugs ([f132512](https://github.com/timoa/github-actions-gui/commit/f132512c31cfb7bfcab259a3e2b14c8f68b22bcd))
+
 ## [1.0.4](https://github.com/timoa/github-actions-gui/compare/v1.0.3...v1.0.4) (2026-02-04)
 
 
