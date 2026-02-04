@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/timoa/workflow-editor/compare/v1.1.1...v1.1.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* **cicd:** fix the Semantic Release job ([f1a8a3e](https://github.com/timoa/workflow-editor/commit/f1a8a3e0851e0e047013a5c4e4bd67d93d6807b3))
+* **project:** rename the project to Workflow Editor ([2d3e395](https://github.com/timoa/workflow-editor/commit/2d3e3955ae8a8d7a01649a88ff30c88794d021ff))
+
 ## [1.1.1](https://github.com/timoa/github-actions-gui/compare/v1.1.0...v1.1.1) (2026-02-04)
 
 
