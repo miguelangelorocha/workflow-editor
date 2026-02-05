@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/timoa/workflow-editor/compare/v1.1.2...v1.1.3) (2026-02-05)
+
+
+### Bug Fixes
+
+* **trigger:** fix the lint issue on TriggerBadge ([0ec5826](https://github.com/timoa/workflow-editor/commit/0ec5826f320093cb6db33293d2ef908cb6767676))
+
 ## [1.1.2](https://github.com/timoa/workflow-editor/compare/v1.1.1...v1.1.2) (2026-02-04)
 
 
