@@ -1,3 +1,11 @@
+## [1.2.10](https://github.com/timoa/workflow-editor/compare/v1.2.9...v1.2.10) (2026-02-06)
+
+
+### Bug Fixes
+
+* **extension:** try to implement a undo shortcut ([8010810](https://github.com/timoa/workflow-editor/commit/801081006b6624e3cc336ecfa357a2ac5c60a518))
+* **ui:** resize the extension font-size and padding to fit the VScode design ([9eb97f6](https://github.com/timoa/workflow-editor/commit/9eb97f69790df791448db8c349e7a81c3136c83b))
+
 ## [1.2.9](https://github.com/timoa/workflow-editor/compare/v1.2.8...v1.2.9) (2026-02-06)
 
 
