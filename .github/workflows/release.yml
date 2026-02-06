@@ -44,8 +44,10 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Build
-        run: pnpm build
+      - name: Build extension
+        run: |
+          pnpm run compile
+          pnpm run webpack
 
   release:
     name: Release

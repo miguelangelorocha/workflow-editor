@@ -5,16 +5,17 @@ on:
     branches: [main, master]
     paths:
       - 'src/**'
-      - 'public/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'vite.config.ts'
       - 'vitest.config.ts'
       - 'tsconfig.json'
       - 'tsconfig.node.json'
+      - 'tsconfig.webview.json'
       - 'tailwind.config.js'
       - 'postcss.config.js'
       - 'eslint.config.js'
+      - 'webpack.config.cjs'
       - 'index.html'
       - '.github/workflows/pull-request.yml'
 
@@ -69,8 +70,10 @@ jobs:
           echo "| **Lines** | ${LINES}% |" >> $GITHUB_STEP_SUMMARY
           echo "| **Statements** | ${STATEMENTS}% |" >> $GITHUB_STEP_SUMMARY
 
-      - name: Build
-        run: pnpm build
+      - name: Build extension
+        run: |
+          pnpm run compile
+          pnpm run webpack
 
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
