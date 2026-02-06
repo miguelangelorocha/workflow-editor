@@ -2,13 +2,19 @@ import { parseWorkflow } from './parseWorkflow'
 import { serializeWorkflow } from './serializeWorkflow'
 import type { Workflow } from '@/types/workflow'
 
-// VSCode webview API - will be available in the webview context
-declare const vscode: {
+export interface VscodeApi {
   postMessage: (message: { command: string; [key: string]: unknown }) => void
-} | undefined
+}
 
-// Get vscode API from window
-const getVscode = () => (window as any).vscode
+declare global {
+  interface Window {
+    vscode?: VscodeApi
+  }
+}
+
+export function getVscode(): VscodeApi | undefined {
+  return window.vscode
+}
 
 export interface OpenResult {
   workflow: Workflow

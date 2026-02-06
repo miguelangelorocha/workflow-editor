@@ -2,9 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
+import { getVscode } from './lib/fileHandling'
 
 // Get vscode API from window (set by script in HTML)
-const vscode = (window as any).vscode
+const vscode = getVscode()
 
 // Set up message listener for VSCode
 window.addEventListener('message', (event) => {

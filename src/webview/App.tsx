@@ -19,7 +19,7 @@ import { TriggerPropertyPanel } from './components/TriggerPropertyPanel'
 import { WorkflowPropertyPanel } from './components/WorkflowPropertyPanel'
 import { PasteYamlDialog } from './components/PasteYamlDialog'
 import { SourceCodeDialog } from './components/SourceCodeDialog'
-import { openWorkflowFromYaml, saveWorkflowToFile, requestOpenFile } from './lib/fileHandling'
+import { openWorkflowFromYaml, saveWorkflowToFile, requestOpenFile, getVscode } from './lib/fileHandling'
 import { serializeWorkflow } from './lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from './lib/triggerUtils'
 import { lintWorkflow, type LintError } from './lib/workflowLinter'
@@ -30,9 +30,6 @@ import {
   type TriggerNodeData,
 } from './lib/workflowToFlow'
 import type { Workflow } from '@/types/workflow'
-
-// VSCode webview API - get from window
-const getVscode = () => (window as any).vscode
 
 type FlowNode = Node<JobNodeData | TriggerNodeData | AddJobNodeData>
 
