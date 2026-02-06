@@ -177,26 +177,26 @@ export function JobPropertyPanel({
   if (!job) return null
 
   return (
-    <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm pr-5">
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-4 py-2">
-        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Job: {jobId}</h2>
+    <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm pr-3">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-3 py-1.5">
+        <h2 className="text-xs font-semibold text-slate-800 dark:text-slate-200">Job: {jobId}</h2>
         <button
           type="button"
           onClick={onClose}
           className="rounded p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300"
           aria-label="Close panel"
         >
-          <span className="text-base leading-none">×</span>
+          <span className="text-sm leading-none">×</span>
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <div>
           <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Display name</label>
           <input
             type="text"
             value={job.name ?? ''}
             onChange={(e) => setJobField('name', e.target.value || undefined)}
-            className="mt-1 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
             placeholder={jobId}
           />
         </div>
@@ -206,7 +206,7 @@ export function JobPropertyPanel({
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900 dark:text-slate-200"
+              className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-1 text-xs text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900 dark:text-slate-200"
             >
               <span className="flex-shrink-0">{selectedOption.icon}</span>
               <span className="flex-1">{selectedOption.label}</span>
@@ -219,7 +219,7 @@ export function JobPropertyPanel({
                     key={option.value}
                     type="button"
                     onClick={() => handleRunsOnChange(option.value)}
-                    className={`w-full px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 ${
+                    className={`w-full px-1.5 py-1 text-xs text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 ${
                       option.value === runsOn ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-200'
                     }`}
                   >
@@ -231,7 +231,7 @@ export function JobPropertyPanel({
                   <button
                     type="button"
                     onClick={() => handleRunsOnChange(runsOn)}
-                    className="w-full px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    className="w-full px-1.5 py-1 text-xs text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                   >
                     <span className="flex-shrink-0">{selectedOption.icon}</span>
                     <span>{runsOn || 'ubuntu-latest'}</span>
@@ -257,7 +257,7 @@ export function JobPropertyPanel({
                     onClick={(e) => e.stopPropagation()}
                     className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 focus:ring-slate-500 dark:focus:ring-slate-400"
                   />
-                  <label htmlFor={`needs-${id}`} className="cursor-pointer text-sm text-slate-700 dark:text-slate-300">
+                  <label htmlFor={`needs-${id}`} className="cursor-pointer text-xs text-slate-700 dark:text-slate-300">
                     {id}
                   </label>
                 </li>
@@ -266,7 +266,7 @@ export function JobPropertyPanel({
           )}
         </div>
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Environment Variables</label>
             <button
               type="button"
@@ -275,7 +275,7 @@ export function JobPropertyPanel({
                 const newEnv = { ...currentEnv, '': '' }
                 setJobField('env', newEnv)
               }}
-              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
             >
               + Add variable
             </button>
@@ -296,7 +296,7 @@ export function JobPropertyPanel({
                       newEnv[e.target.value] = value
                       setJobField('env', Object.keys(newEnv).length > 0 ? newEnv : undefined)
                     }}
-                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="Variable name"
                   />
                   <input
@@ -312,7 +312,7 @@ export function JobPropertyPanel({
                       }
                       setJobField('env', Object.keys(newEnv).length > 0 ? newEnv : undefined)
                     }}
-                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="Value"
                   />
                   <button
@@ -334,7 +334,7 @@ export function JobPropertyPanel({
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Matrix Strategy</label>
             <button
               type="button"
@@ -345,13 +345,13 @@ export function JobPropertyPanel({
                   setJobField('strategy', { matrix: {} })
                 }
               }}
-              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
             >
               {job.strategy?.matrix ? 'Remove matrix' : 'Add matrix'}
             </button>
           </div>
           {job.strategy?.matrix && (
-            <div className="mb-4 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-3 space-y-3" data-matrix-dropdown>
+            <div className="mb-3 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-2 space-y-2" data-matrix-dropdown>
               <div className="space-y-2">
                 {Object.entries(job.strategy.matrix).map(([key, values]) => {
                   const isCommonVar = isCommonMatrixVariable(key)
@@ -371,7 +371,7 @@ export function JobPropertyPanel({
                                     [key]: !prev[key],
                                   }))
                                 }
-                                className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-sm text-left flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-200"
+                                className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-1 text-xs text-left flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-200"
                               >
                                 <span className="font-medium">
                                   {COMMON_MATRIX_VARIABLES.find((v) => v.name === key)?.label || key}
@@ -400,14 +400,14 @@ export function JobPropertyPanel({
                                           [key]: false,
                                         }))
                                       }}
-                                      className={`w-full px-2 py-1.5 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-700 ${
+                                      className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-700 ${
                                         option.name === key ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-200'
                                       }`}
                                     >
                                       {option.label}
                                     </button>
                                   ))}
-                                  <div className="border-t border-slate-200 px-2 py-1.5">
+                                  <div className="border-t border-slate-200 px-1.5 py-1">
                                     <input
                                       type="text"
                                       value={key}
@@ -420,7 +420,7 @@ export function JobPropertyPanel({
                                           matrix: newMatrix,
                                         })
                                       }}
-                                      className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                                      className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                                       placeholder="Custom variable name"
                                       onClick={(e) => e.stopPropagation()}
                                     />
@@ -441,7 +441,7 @@ export function JobPropertyPanel({
                                   matrix: newMatrix,
                                 })
                               }}
-                              className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm font-medium"
+                              className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs font-medium"
                               placeholder="Variable name"
                             />
                           )}
@@ -479,7 +479,7 @@ export function JobPropertyPanel({
                                         [`${key}-${valueIdx}`]: !prev[`${key}-${valueIdx}`],
                                       }))
                                     }
-                                    className="w-24 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-sm text-left flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-200"
+                                    className="w-24 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-1 text-xs text-left flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-200"
                                   >
                                     <span className="truncate">{valueStr}</span>
                                     <span className="text-slate-400 dark:text-slate-500 text-xs shrink-0 ml-1">▼</span>
@@ -505,9 +505,9 @@ export function JobPropertyPanel({
                                               [`${key}-${valueIdx}`]: false,
                                             }))
                                           }}
-                                          className={`w-full px-2 py-1 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-700 ${
-                                            predefValue === valueStr ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-200'
-                                          }`}
+className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-700 ${
+                                          predefValue === valueStr ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-200'
+                                        }`}
                                         >
                                           {predefValue}
                                         </button>
@@ -534,7 +534,7 @@ export function JobPropertyPanel({
                                               matrix: newMatrix,
                                             })
                                           }}
-                                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                                           placeholder="Custom value"
                                           onClick={(e) => e.stopPropagation()}
                                         />
@@ -564,7 +564,7 @@ export function JobPropertyPanel({
                                       matrix: newMatrix,
                                     })
                                   }}
-                                  className="w-24 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                                  className="w-24 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                                   placeholder="Value"
                                 />
                               )}
@@ -604,7 +604,7 @@ export function JobPropertyPanel({
                             matrix: newMatrix,
                           })
                         }}
-                        className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+                        className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
                       >
                         + Add value
                       </button>
@@ -621,7 +621,7 @@ export function JobPropertyPanel({
                         '__new__': !prev['__new__'],
                       }))
                     }
-                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center justify-between"
+                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center justify-between"
                   >
                     <span>+ Add matrix variable</span>
                     <span className="text-slate-400 dark:text-slate-500">▼</span>
@@ -644,12 +644,12 @@ export function JobPropertyPanel({
                               '__new__': false,
                             }))
                           }}
-                          className="w-full px-2 py-1.5 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-200"
+                          className="w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-200"
                         >
                           {option.label}
                         </button>
                       ))}
-                      <div className="border-t border-slate-200 dark:border-slate-700 px-2 py-1">
+                      <div className="border-t border-slate-200 dark:border-slate-700 px-1.5 py-1">
                         <input
                           type="text"
                           onKeyDown={(e) => {
@@ -667,7 +667,7 @@ export function JobPropertyPanel({
                               input.value = ''
                             }
                           }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                           placeholder="Custom variable name (Enter)"
                           onClick={(e) => e.stopPropagation()}
                         />
@@ -676,7 +676,7 @@ export function JobPropertyPanel({
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-slate-200 dark:border-slate-700 pt-2">
+              <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-700 pt-1.5">
                 <label className="flex items-center gap-2 text-xs text-slate-900 dark:text-slate-200">
                   <input
                     type="checkbox"
@@ -703,7 +703,7 @@ export function JobPropertyPanel({
                         'max-parallel': value,
                       })
                     }}
-                    className="w-20 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="w-20 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="∞"
                     min="1"
                   />
@@ -719,7 +719,7 @@ export function JobPropertyPanel({
             <button
               type="button"
               onClick={addStep}
-              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
             >
               Add step
             </button>
@@ -743,14 +743,14 @@ export function JobPropertyPanel({
                     type="text"
                     value={step.name ?? ''}
                     onChange={(e) => updateStep(index, (s) => ({ ...s, name: e.target.value || undefined }))}
-                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="Step name"
                   />
                   <input
                     type="text"
                     value={step.uses ?? ''}
                     onChange={(e) => updateStep(index, (s) => ({ ...s, uses: e.target.value || undefined }))}
-                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="uses: actions/checkout@v4"
                   />
                   {step.uses && (
@@ -788,7 +788,7 @@ export function JobPropertyPanel({
                                     with: Object.keys(newWith).length > 0 ? newWith : undefined,
                                   }))
                                 }}
-                                className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                                className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                                 placeholder="Input name"
                               />
                               <input
@@ -805,7 +805,7 @@ export function JobPropertyPanel({
                                   }
                                   updateStep(index, (s) => ({ ...s, with: newWith }))
                                 }}
-                                className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                                className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                                 placeholder="Value"
                               />
                               <button
@@ -830,7 +830,7 @@ export function JobPropertyPanel({
                               const newWith = { ...step.with!, '': '' }
                               updateStep(index, (s) => ({ ...s, with: newWith }))
                             }}
-                            className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+                            className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
                           >
                             + Add input
                           </button>
@@ -841,7 +841,7 @@ export function JobPropertyPanel({
                   <textarea
                     value={step.run ?? ''}
                     onChange={(e) => updateStep(index, (s) => ({ ...s, run: e.target.value || undefined }))}
-                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm font-mono"
+                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs font-mono"
                     placeholder="run: ..."
                     rows={2}
                   />
@@ -856,7 +856,7 @@ export function JobPropertyPanel({
           <button
             type="button"
             onClick={() => onDeleteJob(jobId)}
-            className="rounded border border-red-200 dark:border-red-800 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
+            className="rounded border border-red-200 dark:border-red-800 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
             aria-label={`Delete job ${jobId}`}
           >
             Delete job

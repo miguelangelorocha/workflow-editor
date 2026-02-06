@@ -447,7 +447,7 @@ function AppInner() {
           }}
         />
       )}
-      <header className="flex flex-wrap items-center gap-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 shadow-sm text-sm">
+      <header className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 shadow-sm text-xs">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {workflow ? (
             isEditingWorkflowName ? (
@@ -458,12 +458,12 @@ function AppInner() {
                 onChange={(e) => handleWorkflowNameChange(e.target.value)}
                 onBlur={() => setIsEditingWorkflowName(false)}
                 onKeyDown={handleWorkflowNameKeyDown}
-                className="text-sm font-semibold text-slate-800 dark:text-slate-200 bg-transparent border-b-2 border-slate-400 dark:border-slate-600 focus:border-slate-600 dark:focus:border-slate-400 focus:outline-none px-1 -mx-1 min-w-0 flex-1 max-w-md"
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent border-b-2 border-slate-400 dark:border-slate-600 focus:border-slate-600 dark:focus:border-slate-400 focus:outline-none px-1 -mx-1 min-w-0 flex-1 max-w-md"
                 placeholder="Untitled Workflow"
               />
             ) : (
               <h1
-                className="text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-text hover:text-slate-600 dark:hover:text-slate-300 transition-colors min-w-0 flex-1"
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-text hover:text-slate-600 dark:hover:text-slate-300 transition-colors min-w-0 flex-1"
                 onClick={() => setIsEditingWorkflowName(true)}
                 title="Click to edit workflow name"
               >
@@ -471,31 +471,31 @@ function AppInner() {
               </h1>
             )
           ) : (
-            <h1 className="text-sm font-semibold text-slate-400 dark:text-slate-500">No workflow loaded</h1>
+            <h1 className="text-xs font-semibold text-slate-400 dark:text-slate-500">No workflow loaded</h1>
           )}
         </div>
         <div className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Workflow Editor</div>
-        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" aria-hidden />
+        <div className="h-5 w-px bg-slate-200 dark:bg-slate-700" aria-hidden />
         <div className="flex items-center gap-2" role="group" aria-label="File">
           <button
             type="button"
             onClick={handleSave}
             disabled={!workflow || !hasJobs}
-            className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50"
+            className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50"
             title="Save"
             aria-label="Save"
           >
-            <HiSave className="w-5 h-5" />
+            <HiSave className="w-4 h-4" />
           </button>
           <button
             type="button"
             onClick={() => setShowSourceDialog(true)}
             disabled={!workflow}
-            className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50"
+            className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50"
             title="View source"
             aria-label="View source"
           >
-            <HiCode className="w-5 h-5" />
+            <HiCode className="w-4 h-4" />
           </button>
           <button
             type="button"
@@ -504,26 +504,26 @@ function AppInner() {
               setIsEditingWorkflowName(false)
               setWorkflow(workflow ? null : sampleWorkflow)
             }}
-            className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+            className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
             title={workflow ? 'Clear' : 'Load sample'}
             aria-label={workflow ? 'Clear' : 'Load sample'}
           >
-            {workflow ? <HiTrash className="w-5 h-5" /> : <HiFolderOpen className="w-5 h-5" />}
+            {workflow ? <HiTrash className="w-4 h-4" /> : <HiFolderOpen className="w-4 h-4" />}
           </button>
         </div>
-        <div className="h-6 w-px bg-slate-200" aria-hidden />
+        <div className="h-5 w-px bg-slate-200" aria-hidden />
         <div className="flex items-center gap-2" role="group" aria-label="Editor">
           <button
             type="button"
             onClick={handleAddTrigger}
-            className="rounded border border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50"
+            className="rounded border border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50"
           >
             + Add Trigger
           </button>
           <button
             type="button"
             onClick={() => handleAddJob()}
-            className="rounded border border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+            className="rounded border border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50"
           >
             + Add Job
           </button>
@@ -533,7 +533,7 @@ function AppInner() {
             type="button"
             onClick={() => setShowWorkflowProperties(true)}
             disabled={!workflow}
-            className={`rounded p-2 disabled:opacity-50 ${
+            className={`rounded p-1.5 disabled:opacity-50 ${
               showWorkflowProperties
                 ? 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
@@ -541,14 +541,14 @@ function AppInner() {
             title="Edit workflow name, run name, and environment variables"
             aria-label="Workflow config"
           >
-            <HiCog className="w-5 h-5" />
+            <HiCog className="w-4 h-4" />
           </button>
         </div>
       </header>
       {(parseErrors.length > 0 || lintErrors.length > 0) && (
         <div
           role="alert"
-          className="flex flex-col gap-2 border-b border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 px-4 py-2 text-sm text-amber-800 dark:text-amber-200"
+          className="flex flex-col gap-2 border-b border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 text-xs text-amber-800 dark:text-amber-200"
         >
           <div className="flex items-center justify-between">
             <span>
@@ -601,6 +601,7 @@ function AppInner() {
               onNodeClick={onNodeClick}
               nodeTypes={nodeTypes}
               fitView
+              fitViewOptions={{ maxZoom: 0.85 }}
               className="bg-slate-50 dark:bg-slate-900"
             >
               <Background />

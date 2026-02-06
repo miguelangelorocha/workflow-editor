@@ -51,29 +51,29 @@ export function WorkflowPropertyPanel({
   )
 
   return (
-    <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm pr-5">
-      <div className="flex flex-col border-b border-slate-200 dark:border-slate-700 px-4 py-2">
+    <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm pr-3">
+      <div className="flex flex-col border-b border-slate-200 dark:border-slate-700 px-3 py-1.5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Workflow config</h2>
+          <h2 className="text-xs font-semibold text-slate-800 dark:text-slate-200">Workflow config</h2>
         <button
           type="button"
           onClick={onClose}
           className="rounded p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300"
           aria-label="Close panel"
         >
-          <span className="text-base leading-none">×</span>
+          <span className="text-sm leading-none">×</span>
         </button>
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Name, run name, and environment variables</p>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <div>
           <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Workflow name</label>
           <input
             type="text"
             value={workflow.name ?? ''}
             onChange={(e) => setWorkflowField('name', e.target.value || undefined)}
-            className="mt-1 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
             placeholder="Untitled Workflow"
           />
         </div>
@@ -83,12 +83,12 @@ export function WorkflowPropertyPanel({
             type="text"
             value={workflow['run-name'] ?? ''}
             onChange={(e) => setWorkflowField('run-name', e.target.value || undefined)}
-            className="mt-1 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
             placeholder="Run name expression"
           />
         </div>
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Environment Variables</label>
             <button
               type="button"
@@ -96,7 +96,7 @@ export function WorkflowPropertyPanel({
                 const newEnv = { ...env, '': '' }
                 setWorkflowField('env', newEnv)
               }}
-              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
             >
               + Add variable
             </button>
@@ -116,14 +116,14 @@ export function WorkflowPropertyPanel({
                       newEnv[e.target.value] = value
                       setWorkflowField('env', Object.keys(newEnv).length > 0 ? newEnv : undefined)
                     }}
-                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="Variable name"
                   />
                   <input
                     type="text"
                     value={value}
                     onChange={(e) => updateEnvVar(key, e.target.value)}
-                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                    className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     placeholder="Value"
                   />
                   <button

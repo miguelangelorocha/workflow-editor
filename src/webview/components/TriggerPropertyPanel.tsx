@@ -119,26 +119,26 @@ export function TriggerPropertyPanel({
   )
 
   return (
-    <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm pr-5">
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-4 py-2">
-        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Workflow Triggers</h2>
+    <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm pr-3">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-3 py-1.5">
+        <h2 className="text-xs font-semibold text-slate-800 dark:text-slate-200">Workflow Triggers</h2>
         <button
           type="button"
           onClick={onClose}
           className="rounded p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300"
           aria-label="Close panel"
         >
-          <span className="text-base leading-none">×</span>
+          <span className="text-sm leading-none">×</span>
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Triggers</label>
             <button
               type="button"
               onClick={addTrigger}
-              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+              className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
             >
               + Add Trigger
             </button>
@@ -146,9 +146,9 @@ export function TriggerPropertyPanel({
           {triggers.length === 0 ? (
             <p className="text-xs text-slate-500 dark:text-slate-400 italic">No triggers configured</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {triggers.map((trigger, index) => (
-                <div key={index} className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-3 space-y-3">
+                <div key={index} className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-2 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Trigger {index + 1}</span>
                     <button
@@ -166,7 +166,7 @@ export function TriggerPropertyPanel({
                     <select
                       value={trigger.event}
                       onChange={(e) => updateTrigger(index, (t) => ({ ...t, event: e.target.value, config: {} }))}
-                      className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1.5 text-sm"
+                      className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                     >
                       {TRIGGER_TYPES.map((type) => (
                         <option key={type.value} value={type.value}>
@@ -191,7 +191,7 @@ export function TriggerPropertyPanel({
                                 branches[branchIdx] = e.target.value
                                 updateTriggerConfig(index, 'branches', branches)
                               }}
-                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                               placeholder="main"
                             />
                             <button
@@ -213,7 +213,7 @@ export function TriggerPropertyPanel({
                               input.value = ''
                             }
                           }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                           placeholder="Press Enter to add branch"
                         />
                       </div>
@@ -235,7 +235,7 @@ export function TriggerPropertyPanel({
                                 tags[tagIdx] = e.target.value
                                 updateTriggerConfig(index, 'tags', tags)
                               }}
-                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                               placeholder="v*"
                             />
                             <button
@@ -257,7 +257,7 @@ export function TriggerPropertyPanel({
                               input.value = ''
                             }
                           }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                           placeholder="Press Enter to add tag"
                         />
                       </div>
@@ -291,7 +291,7 @@ export function TriggerPropertyPanel({
                                 types[typeIdx] = e.target.value
                                 updateTriggerConfig(index, 'types', types)
                               }}
-                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                               placeholder={
                                 trigger.event === 'release' ? 'published' :
                                 trigger.event === 'repository_dispatch' ? 'deploy' :
@@ -319,7 +319,7 @@ export function TriggerPropertyPanel({
                               input.value = ''
                             }
                           }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                           placeholder="Press Enter to add type"
                         />
                       </div>
@@ -341,7 +341,7 @@ export function TriggerPropertyPanel({
                                 paths[pathIdx] = e.target.value
                                 updateTriggerConfig(index, 'paths', paths)
                               }}
-                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                               placeholder="src/**"
                             />
                             <button
@@ -363,7 +363,7 @@ export function TriggerPropertyPanel({
                               input.value = ''
                             }
                           }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                           placeholder="Press Enter to add path"
                         />
                       </div>
@@ -385,7 +385,7 @@ export function TriggerPropertyPanel({
                                 pathsIgnore[pathIdx] = e.target.value
                                 updateTriggerConfig(index, 'pathsIgnore', pathsIgnore)
                               }}
-                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                              className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                               placeholder="docs/**"
                             />
                             <button
@@ -407,7 +407,7 @@ export function TriggerPropertyPanel({
                               input.value = ''
                             }
                           }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-sm"
+                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
                           placeholder="Press Enter to add path"
                         />
                       </div>
@@ -423,7 +423,7 @@ export function TriggerPropertyPanel({
                         type="text"
                         value={(trigger.config.cron as string) ?? ''}
                         onChange={(e) => updateTriggerConfig(index, 'cron', e.target.value)}
-                        className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1.5 text-sm font-mono"
+                        className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs font-mono"
                         placeholder="0 0 * * *"
                       />
                       <p className="mt-1 text-xs text-slate-500">
