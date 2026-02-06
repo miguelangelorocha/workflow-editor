@@ -41,7 +41,15 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(openCommand, openFileCommand, openWithEditorCommand, saveCommand);
+  // Register undo command (triggered by Ctrl+Z when workflow editor is focused)
+  const undoCommand = vscode.commands.registerCommand('workflow-visual-editor.undo', () => {
+    const provider = WorkflowEditorProvider.getInstance();
+    if (provider) {
+      provider.requestUndo();
+    }
+  });
+
+  context.subscriptions.push(openCommand, openFileCommand, openWithEditorCommand, saveCommand, undoCommand);
 
   // If a .yml/.yaml file is already open, offer to open it in the editor
   if (vscode.window.activeTextEditor) {

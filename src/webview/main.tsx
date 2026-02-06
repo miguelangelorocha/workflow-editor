@@ -30,6 +30,9 @@ window.addEventListener('message', (event) => {
     case 'saveRequest':
       window.dispatchEvent(new CustomEvent('vscode-saveRequest'))
       break
+    case 'undoRequest':
+      window.dispatchEvent(new CustomEvent('vscode-undoRequest'))
+      break
   }
 })
 

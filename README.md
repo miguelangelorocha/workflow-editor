@@ -44,6 +44,7 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 
 ### Keyboard Shortcuts
 
+- **Ctrl/Cmd+Z**: Undo last change (when the Workflow Editor tab is focused)
 - **Ctrl/Cmd+S**: Save workflow (when the Workflow Editor tab is focused; uses VSCode command so it works reliably)
 - **Escape**: Close property panel or source dialog
 
@@ -161,6 +162,7 @@ To get a token:
 
 ## Keyboard shortcuts
 
+- **Ctrl/Cmd+Z**: Undo last change (when Workflow Editor tab is focused)
 - **Ctrl/Cmd+S**: Save workflow (when Workflow Editor tab is focused)
 - **Escape**: Close property panel or source dialog
 

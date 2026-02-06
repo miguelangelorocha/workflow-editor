@@ -33,6 +33,8 @@ type FlowNode = Node<JobNodeData | TriggerNodeData | AddJobNodeData>
 
 const nodeTypes = { job: JobNode, trigger: TriggerNode, addJob: AddJobNode }
 
+const MAX_UNDO_STEPS = 50
+
 const sampleWorkflow: Workflow = {
   name: 'Sample',
   on: { push: { branches: ['main'] } },
@@ -53,7 +55,8 @@ function AppInner() {
   const [, setTheme] = useState<'light' | 'dark'>('dark')
   const [workflow, setWorkflow] = useState<Workflow | null>(null)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
-  
+  const undoStackRef = useRef<Workflow[]>([])
+
   // Listen for VSCode theme changes
   useEffect(() => {
     const handleThemeChange = (event: CustomEvent<{ theme: 'light' | 'dark' }>) => {
@@ -87,6 +90,7 @@ function AppInner() {
     const handleLoadFile = (event: CustomEvent<{ content: string; filename: string }>) => {
       const { content } = event.detail
       const { workflow: w, errors } = openWorkflowFromYaml(content)
+      undoStackRef.current = []
       setIsEditingWorkflowName(false)
       isUpdatingWorkflowRef.current = true
       setWorkflow(w)
@@ -106,6 +110,27 @@ function AppInner() {
       window.removeEventListener('vscode-loadFile', handleLoadFile as EventListener)
     }
   }, [selectedJobId])
+
+  const pushUndoState = useCallback((w: Workflow | null) => {
+    if (!w) return
+    const stack = undoStackRef.current
+    stack.push(JSON.parse(JSON.stringify(w)) as Workflow)
+    if (stack.length > MAX_UNDO_STEPS) stack.shift()
+  }, [])
+
+  const handleUndo = useCallback(() => {
+    const stack = undoStackRef.current
+    if (stack.length === 0) return
+    const prev = stack.pop()
+    if (!prev) return
+    isUpdatingWorkflowRef.current = true
+    setWorkflow(prev)
+    setSelectedJobId(null)
+    setSelectedTrigger(false)
+    setTimeout(() => {
+      isUpdatingWorkflowRef.current = false
+    }, 100)
+  }, [])
 
   const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
   const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
@@ -136,6 +161,7 @@ function AppInner() {
       const jobName = workflow.jobs[jobId].name || jobId
       const message = `Are you sure you want to delete the job "${jobName}"? This cannot be undone.`
       if (!window.confirm(message)) return
+      pushUndoState(workflow)
       const nextJobs = { ...workflow.jobs }
       delete nextJobs[jobId]
       for (const id of Object.keys(nextJobs)) {
@@ -158,7 +184,7 @@ function AppInner() {
         isUpdatingWorkflowRef.current = false
       }, 100)
     },
-    [workflow]
+    [workflow, pushUndoState]
   )
 
   const nodes = useMemo(() => {
@@ -244,6 +270,7 @@ function AppInner() {
       }, 100)
       return
     }
+    pushUndoState(workflow)
     const triggers = parseTriggers(workflow.on)
     const newTriggers = [...triggers, { event: 'push', config: {} }]
     const newOn = triggersToOn(newTriggers)
@@ -254,12 +281,11 @@ function AppInner() {
     setTimeout(() => {
       isUpdatingWorkflowRef.current = false
     }, 100)
-  }, [workflow])
+  }, [workflow, pushUndoState])
 
   const handleAddJob = useCallback(
     (needs?: string[]) => {
       if (!workflow) {
-        // Create a new workflow if none exists
         const newWorkflow: Workflow = {
           name: 'Untitled Workflow',
           on: { push: { branches: ['main'] } },
@@ -275,7 +301,7 @@ function AppInner() {
         return
       }
 
-      // Check if workflow has triggers, if not, create a default push trigger
+      pushUndoState(workflow)
       const triggers = parseTriggers(workflow.on)
       const needsTrigger = triggers.length === 0
       const updatedOn = needsTrigger ? { push: { branches: ['main'] } } : workflow.on
@@ -304,7 +330,7 @@ function AppInner() {
         isUpdatingWorkflowRef.current = false
       }, 100)
     },
-    [workflow, generateUniqueJobId]
+    [workflow, generateUniqueJobId, pushUndoState]
   )
 
   const onNodeClick = useCallback(
@@ -337,12 +363,17 @@ function AppInner() {
         setSelectedJobId(null)
         return
       }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault()
+        handleUndo()
+        return
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault()
         if (workflow && hasJobs) handleSave()
       }
     },
-    [showSourceDialog, workflow, hasJobs, handleSave]
+    [showSourceDialog, workflow, hasJobs, handleSave, handleUndo]
   )
 
   useEffect(() => {
@@ -361,13 +392,14 @@ function AppInner() {
   const handleWorkflowNameChange = useCallback(
     (value: string) => {
       if (!workflow) return
+      pushUndoState(workflow)
       isUpdatingWorkflowRef.current = true
       setWorkflow({ ...workflow, name: value || undefined })
       setTimeout(() => {
         isUpdatingWorkflowRef.current = false
       }, 100)
     },
-    [workflow]
+    [workflow, pushUndoState]
   )
 
   const handleWorkflowNameKeyDown = useCallback(
@@ -391,6 +423,12 @@ function AppInner() {
     return () => window.removeEventListener('vscode-saveRequest', onSaveRequest)
   }, [workflow, hasJobs, handleSave])
 
+  // Listen for undo request from VSCode (e.g. Ctrl+Z when workflow editor is focused)
+  useEffect(() => {
+    window.addEventListener('vscode-undoRequest', handleUndo)
+    return () => window.removeEventListener('vscode-undoRequest', handleUndo)
+  }, [handleUndo])
+
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 pr-4 box-border max-w-full overflow-x-hidden">
       {showSourceDialog && workflow && (
@@ -398,6 +436,7 @@ function AppInner() {
           initialYaml={serializeWorkflow(workflow)}
           onClose={() => setShowSourceDialog(false)}
           onSave={(w, errors) => {
+            pushUndoState(workflow)
             setIsEditingWorkflowName(false)
             isUpdatingWorkflowRef.current = true
             setWorkflow(w)
@@ -461,6 +500,7 @@ function AppInner() {
           <button
             type="button"
             onClick={() => {
+              if (workflow) pushUndoState(workflow)
               setIsEditingWorkflowName(false)
               setWorkflow(workflow ? null : sampleWorkflow)
             }}
@@ -584,9 +624,9 @@ function AppInner() {
           <WorkflowPropertyPanel
             workflow={workflow}
             onWorkflowChange={(w) => {
+              pushUndoState(workflow)
               isUpdatingWorkflowRef.current = true
               setWorkflow(w)
-              // Reset flag after a brief delay to allow React Flow to update
               setTimeout(() => {
                 isUpdatingWorkflowRef.current = false
               }, 100)
@@ -598,9 +638,9 @@ function AppInner() {
           <TriggerPropertyPanel
             workflow={workflow}
             onWorkflowChange={(w) => {
+              pushUndoState(workflow)
               isUpdatingWorkflowRef.current = true
               setWorkflow(w)
-              // Reset flag after a brief delay to allow React Flow to update
               setTimeout(() => {
                 isUpdatingWorkflowRef.current = false
               }, 100)
@@ -613,9 +653,9 @@ function AppInner() {
             workflow={workflow}
             jobId={selectedJobId}
             onWorkflowChange={(w) => {
+              pushUndoState(workflow)
               isUpdatingWorkflowRef.current = true
               setWorkflow(w)
-              // Reset flag after a brief delay to allow React Flow to update
               setTimeout(() => {
                 isUpdatingWorkflowRef.current = false
               }, 100)

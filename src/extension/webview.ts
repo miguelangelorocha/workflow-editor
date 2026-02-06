@@ -112,6 +112,10 @@ export class WorkflowEditorProvider {
     this._panel.webview.postMessage({ command: 'saveRequest' });
   }
 
+  public requestUndo(): void {
+    this._panel.webview.postMessage({ command: 'undoRequest' });
+  }
+
   public async loadFile(uri: vscode.Uri) {
     this._currentFileUri = uri;
     try {

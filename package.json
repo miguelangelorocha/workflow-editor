@@ -50,6 +50,11 @@
         "command": "workflow-visual-editor.save",
         "title": "Save",
         "category": "Workflow Editor"
+      },
+      {
+        "command": "workflow-visual-editor.undo",
+        "title": "Undo",
+        "category": "Workflow Editor"
       }
     ],
     "keybindings": [
@@ -57,6 +62,12 @@
         "command": "workflow-visual-editor.save",
         "key": "ctrl+s",
         "mac": "cmd+s",
+        "when": "workflowEditorFocus"
+      },
+      {
+        "command": "workflow-visual-editor.undo",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
         "when": "workflowEditorFocus"
       }
     ],
