@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding-right: 1.25rem; /* ~20px - room for webview scrollbar so it doesn't overlap content */
+  box-sizing: border-box;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 13px; /* Match VSCode UI font size */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* React Flow dark mode styles */
+.dark .react-flow__controls {
+  background: rgb(30 41 59) !important; /* slate-800 */
+  border: 1px solid rgb(51 65 85) !important; /* slate-700 */
+}
+
+.dark .react-flow__controls-button {
+  background: rgb(30 41 59) !important; /* slate-800 */
+  border-bottom: 1px solid rgb(51 65 85) !important; /* slate-700 */
+  color: rgb(226 232 240) !important; /* slate-200 */
+}
+
+.dark .react-flow__controls-button:hover {
+  background: rgb(51 65 85) !important; /* slate-700 */
+  color: rgb(241 245 249) !important; /* slate-100 */
+}
+
+.dark .react-flow__minimap {
+  background: rgb(30 41 59) !important; /* slate-800 */
+  border: 1px solid rgb(51 65 85) !important; /* slate-700 */
+}
+
+.dark .react-flow__minimap-mask {
+  fill: rgb(15 23 42 / 0.5) !important; /* slate-900 with opacity */
+}
+
+.dark .react-flow__minimap-node {
+  fill: rgb(51 65 85) !important; /* slate-700 */
+}
+
+.dark .react-flow__background {
+  background-color: rgb(15 23 42) !important; /* slate-900 */
+}
+
+.dark .react-flow__background-pattern {
+  stroke: rgb(51 65 85) !important; /* slate-700 */
+}
+
+/* Additional React Flow dark mode styles */
+.dark .react-flow__edge-path {
+  stroke: rgb(148 163 184) !important; /* slate-400 */
+}
+
+.dark .react-flow__edge.selected .react-flow__edge-path {
+  stroke: rgb(59 130 246) !important; /* blue-500 */
+}
+
+.dark .react-flow__handle {
+  background: rgb(51 65 85) !important; /* slate-700 */
+  border-color: rgb(71 85 105) !important; /* slate-600 */
+}
+
+.dark .react-flow__handle-connecting {
+  background: rgb(59 130 246) !important; /* blue-500 */
+}
+
+.dark .react-flow__handle-valid {
+  background: rgb(34 197 94) !important; /* green-500 */
+}

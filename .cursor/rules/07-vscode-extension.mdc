@@ -1,0 +1,104 @@
+---
+description: VSCode extension development patterns and guidelines
+alwaysApply: true
+---
+
+# VSCode Extension Development
+
+## Extension Architecture
+
+- **Extension Host** (`src/extension/`): Node.js code that runs in the VSCode extension host process. Uses VSCode APIs.
+- **Webview** (`src/webview/`): React app that runs in an isolated webview context. Communicates with extension via message passing.
+
+## Extension Entry Point
+
+- **`src/extension/extension.ts`**: Main entry point. Exports `activate()` and `deactivate()` functions.
+- Register commands in `package.json` `contributes.commands`.
+- Activation events defined in `package.json` `activationEvents`.
+
+## Webview Communication
+
+### Extension → Webview
+
+```typescript
+// In extension code
+webview.postMessage({
+  command: 'loadFile',
+  content: yamlContent,
+  filename: 'workflow.yml',
+})
+```
+
+### Webview → Extension
+
+```typescript
+// In webview code (React)
+vscode.postMessage({
+  command: 'saveFile',
+  content: yamlContent,
+  filename: 'workflow.yml',
+})
+```
+
+### Message Handling
+
+- Extension: Handle messages in `webview.onDidReceiveMessage()`.
+- Webview: Listen for messages via `window.addEventListener('message')` and dispatch custom events for React components.
+
+## File Operations
+
+- **Open**: Use `vscode.window.showOpenDialog()` in extension, send content to webview.
+- **Save**: Receive YAML from webview, use `vscode.window.showSaveDialog()` and `vscode.workspace.fs.writeFile()`.
+- **Current File**: Optionally auto-load if editor has `.yml`/`.yaml` file open.
+
+## Theme Integration
+
+- Detect VSCode theme: `vscode.window.activeColorTheme.kind`.
+- Send theme to webview: `webview.postMessage({ command: 'themeChanged', theme: 'dark' | 'light' })`.
+- Listen for theme changes: `vscode.window.onDidChangeActiveColorTheme()`.
+- Webview applies theme via CSS class (`dark` class on `<html>` or `<body>`).
+
+## Build Process
+
+1. **Extension**: `tsc -p tsconfig.json` → compiles `src/extension/` to `out/`.
+2. **Webview**: `webpack --mode production` → bundles `src/webview/` to `media/main.js` and `media/main.css`.
+3. **Package**: `vsce package` → creates `.vsix` file.
+
+## Development
+
+- **Watch mode**: `pnpm run watch` (extension) + `pnpm run webpack-dev` (webview).
+- **Debug**: Press `F5` in VSCode to launch Extension Development Host.
+- **Test**: Run extension in Extension Development Host, test file operations and UI.
+
+## Packaging & Publishing
+
+- **Package**: `pnpm run package` → creates `.vsix` file.
+- **Publish**: `pnpm run publish` → publishes to marketplace (requires `VSCE_PAT` secret).
+- **CI/CD**: GitHub Actions workflow (`.github/workflows/publish.yml`) builds and publishes on release.
+
+## VSCode API Usage
+
+- **File System**: Use `vscode.workspace.fs` (not Node.js `fs`).
+- **Dialogs**: Use `vscode.window.showOpenDialog()`, `showSaveDialog()`, `showInformationMessage()`, etc.
+- **Workspace**: Access workspace folders via `vscode.workspace.workspaceFolders`.
+- **Configuration**: Read settings via `vscode.workspace.getConfiguration()`.
+
+## Webview Security
+
+- **CSP**: Content Security Policy configured in webview HTML.
+- **Nonce**: Use nonces for inline scripts in webview HTML.
+- **Local Resources**: Use `webview.asWebviewUri()` to convert extension URIs to webview-safe URIs.
+
+## Compatibility
+
+- **VSCode**: Full support via standard extension APIs.
+- **Cursor**: Compatible (VSCode-compatible extension).
+- **Windsurf**: Compatible (VSCode-compatible extension).
+- **Minimum VSCode Version**: `^1.80.0` (defined in `package.json` `engines.vscode`).
+
+## File Structure
+
+- Keep extension code (`src/extension/`) separate from webview code (`src/webview/`).
+- Shared types in `src/types/` can be imported by both.
+- Extension compiles to `out/`, webview bundles to `media/`.
+- Exclude source files from package via `.vscodeignore`.
