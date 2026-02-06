@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/timoa/workflow-editor/compare/v1.1.3...v1.2.0) (2026-02-06)
+
+
+### Bug Fixes
+
+* **cicd:** add the pipeline to publish the VSCode extension ([1790c89](https://github.com/timoa/workflow-editor/commit/1790c89d3dcdd73428165aeb8563d0bfd805b242))
+* **cicd:** fix the workflows ([6af1c38](https://github.com/timoa/workflow-editor/commit/6af1c3868f22e3e6687d2292ef940129e41b1fb0))
+* **lint:** fix lint issues + update Publisher ID ([af6e9fe](https://github.com/timoa/workflow-editor/commit/af6e9feb20f2b3624d6e4e505e7b470ee50cbe68))
+
+
+### Features
+
+* **project:** migrate the app as a VSCode extension ([e85ed6a](https://github.com/timoa/workflow-editor/commit/e85ed6a22c4276941d69fabdb5db81a331e3c920))
+
 ## [1.1.3](https://github.com/timoa/workflow-editor/compare/v1.1.2...v1.1.3) (2026-02-05)
 
 
