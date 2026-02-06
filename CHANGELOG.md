@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/timoa/workflow-editor/compare/v1.2.0...v1.2.1) (2026-02-06)
+
+
+### Bug Fixes
+
+* **cicd:** fix the trigger to publish the extension ([920a2dc](https://github.com/timoa/workflow-editor/commit/920a2dc45528260ca462d6cf449c38d62edda2b3))
+
 # [1.2.0](https://github.com/timoa/workflow-editor/compare/v1.1.3...v1.2.0) (2026-02-06)
 
 
