@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/timoa/workflow-editor/compare/v1.2.5...v1.2.6) (2026-02-06)
+
+
+### Bug Fixes
+
+* **project:** rename the extension for the Marketplace ([13a3517](https://github.com/timoa/workflow-editor/commit/13a3517fc93ff97555e00e3fcefefa8beeaf9ca3))
+
 ## [1.2.5](https://github.com/timoa/workflow-editor/compare/v1.2.4...v1.2.5) (2026-02-06)
 
 

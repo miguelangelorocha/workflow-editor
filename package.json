@@ -2,7 +2,7 @@
   "name": "workflow-visual-editor",
   "displayName": "Workflow visual Editor",
   "description": "Visual editor for GitHub Actions workflow files",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "publisher": "Timoa",
   "author": "Damien Laureaux",
   "homepage": "https://workflow-editor.com",
