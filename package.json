@@ -97,6 +97,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@actions/workflow-parser": "^0.3.30",
     "@xyflow/react": "^12.3.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

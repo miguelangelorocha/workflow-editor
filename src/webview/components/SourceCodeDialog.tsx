@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { parseWorkflow } from '@/lib/parseWorkflow'
-import { lintWorkflow, type LintError } from '@/lib/workflowLinter'
+import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
 import type { Workflow } from '@/types/workflow'
 
 interface SourceCodeDialogProps {
@@ -39,8 +39,8 @@ export function SourceCodeDialog({
       setSaveError(errors[0])
       return
     }
-    // Also lint the workflow
-    const lintErrs = lintWorkflow(workflow)
+    // Validate the workflow YAML
+    const lintErrs = validateWorkflowYaml(yaml)
     setLintErrors(lintErrs)
     // Save even if there are lint errors (they're warnings or non-blocking)
     onSave(workflow, errors)
@@ -49,7 +49,7 @@ export function SourceCodeDialog({
 
   const handleLint = () => {
     setSaveError(null)
-    const { workflow, errors } = parseWorkflow(yaml)
+    const { errors } = parseWorkflow(yaml)
     const isParseError =
       errors.length > 0 &&
       (errors[0].includes('YAML parse error') || errors[0].includes('Invalid workflow'))
@@ -58,7 +58,7 @@ export function SourceCodeDialog({
       setLintErrors([])
       return
     }
-    const lintErrs = lintWorkflow(workflow)
+    const lintErrs = validateWorkflowYaml(yaml)
     setLintErrors(lintErrs)
   }
 

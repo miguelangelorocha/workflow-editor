@@ -23,7 +23,7 @@ import { SourceCodeDialog } from '@/components/SourceCodeDialog'
 import { openWorkflowFromYaml, saveWorkflowToFile } from '@/lib/fileHandling'
 import { serializeWorkflow } from '@/lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from '@/lib/triggerUtils'
-import { lintWorkflow, type LintError } from '@/lib/workflowLinter'
+import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
 import {
   workflowToFlowNodesEdges,
   type AddJobNodeData,
@@ -104,7 +104,7 @@ function AppInner() {
   // Lint workflow whenever it changes
   useEffect(() => {
     if (workflow) {
-      const errors = lintWorkflow(workflow)
+      const errors = validateWorkflowYaml(serializeWorkflow(workflow))
       setLintErrors(errors)
     } else {
       setLintErrors([])
