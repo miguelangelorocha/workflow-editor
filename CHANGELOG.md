@@ -1,3 +1,10 @@
+## [1.2.12](https://github.com/timoa/workflow-editor/compare/v1.2.11...v1.2.12) (2026-02-08)
+
+
+### Bug Fixes
+
+* **linter:** migrate from custom linter to official GitHub Actions Workflow linter ([2f0606a](https://github.com/timoa/workflow-editor/commit/2f0606ac6787ced611aab780d6c017306f9709ab))
+
 ## [1.2.11](https://github.com/timoa/workflow-editor/compare/v1.2.10...v1.2.11) (2026-02-07)
 
 
