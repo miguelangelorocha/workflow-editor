@@ -7,6 +7,12 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    server: {
+      deps: {
+        // Inline so Vite bundles it and resolves JSON imports (Node ESM requires import attribute for JSON)
+        inline: ['@actions/workflow-parser'],
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary', 'html', 'json-summary'],

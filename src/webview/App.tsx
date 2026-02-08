@@ -20,7 +20,7 @@ import { SourceCodeDialog } from './components/SourceCodeDialog'
 import { openWorkflowFromYaml, saveWorkflowToFile, getVscode } from './lib/fileHandling'
 import { serializeWorkflow } from './lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from './lib/triggerUtils'
-import { lintWorkflow, type LintError } from './lib/workflowLinter'
+import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
 import {
   workflowToFlowNodesEdges,
   type AddJobNodeData,
@@ -145,10 +145,11 @@ function AppInner() {
   const w = workflow ?? { name: '', on: {}, jobs: {} }
   const { nodes: baseNodes, edges } = workflowToFlowNodesEdges(w)
 
-  // Lint workflow whenever it changes
+  // Validate workflow YAML whenever it changes (using official @actions/workflow-parser)
   useEffect(() => {
     if (workflow) {
-      const errors = lintWorkflow(workflow)
+      const yaml = serializeWorkflow(workflow)
+      const errors = validateWorkflowYaml(yaml)
       setLintErrors(errors)
     } else {
       setLintErrors([])

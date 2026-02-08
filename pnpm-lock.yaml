@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@actions/workflow-parser':
+        specifier: ^0.3.30
+        version: 0.3.44
       '@xyflow/react':
         specifier: ^12.3.6
         version: 12.10.0(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -101,6 +104,14 @@ importers:
         version: 5.1.4(webpack@5.105.0)
 
 packages:
+
+  '@actions/expressions@0.3.44':
+    resolution: {integrity: sha512-Ix5p8nilwVZolpK6Oukm/rzowiCZGBKTTeN1IqR4ZKMuM949ets3y4jLNNPm64a/dCZTEgXzGnNp7CxMiuv7oQ==}
+    engines: {node: '>= 18'}
+
+  '@actions/workflow-parser@0.3.44':
+    resolution: {integrity: sha512-uk+wL1eMc34aRNeaYUyYrQMGYZCAfXFSM101kXSnqsrxVoDgJ72f+LUhQ+frZ3f0lau0rl0RQmeOIymiNELulQ==}
+    engines: {node: '>= 18'}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -1337,6 +1348,10 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  cronstrue@2.59.0:
+    resolution: {integrity: sha512-YKGmAy84hKH+hHIIER07VCAHf9u0Ldelx1uU6EBxsRPDXIA1m5fsKmJfyC3xBhw6cVC/1i83VdbL4PvepTrt8A==}
+    hasBin: true
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -3030,6 +3045,14 @@ packages:
 
 snapshots:
 
+  '@actions/expressions@0.3.44': {}
+
+  '@actions/workflow-parser@0.3.44':
+    dependencies:
+      '@actions/expressions': 0.3.44
+      cronstrue: 2.59.0
+      yaml: 2.8.2
+
   '@alloc/quick-lru@5.2.0': {}
 
   '@ampproject/remapping@2.3.0':
@@ -4257,6 +4280,8 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.9.3
+
+  cronstrue@2.59.0: {}
 
   cross-spawn@7.0.6:
     dependencies:

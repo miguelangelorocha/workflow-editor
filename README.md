@@ -12,7 +12,7 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 - **Property panel**: Click a job node to edit name, runs-on, needs, matrix strategy, and steps (N8N-style).
 - **Matrix strategy**: Configure matrix builds with multiple variable combinations. Visual indicator shows total matrix combinations (e.g., "6× matrix").
 - **Source code preview**: View and edit workflow YAML in a large dialog. Changes apply only when saved.
-- **Workflow linting**: Automatic validation of workflow syntax, trigger names, job dependencies, and circular dependencies with detailed error messages.
+- **Workflow validation**: Automatic validation using the official [@actions/workflow-parser](https://github.com/actions/languageservices) (same as the GitHub Actions VS Code extension). Reports schema and syntax errors with detailed messages.
 - **VSCode Integration**: Open workflow files via context menu or command palette; save directly to workspace. Theme automatically follows your IDE theme (no in-editor theme toggle).
 - **Simplified navbar**: Toolbar keeps Save, View source, Clear/Load sample, Add Trigger/Job, and workflow config; Open file, Paste YAML, and theme buttons were removed for a cleaner UX.
 - **Validation**: Parse errors and lint errors shown in a banner when opening or editing workflows.
