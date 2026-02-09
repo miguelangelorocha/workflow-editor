@@ -1,14 +1,10 @@
 name: Publish Extension
 
 on:
-  # Trigger when Semantic Release has published a new GitHub release (Release workflow completed)
-  workflow_run:
-    workflows: [Release]
-    types: [completed]
-    branches: [main]
-  # Also allow manual run and trigger on release UI events
+  # Trigger when a GitHub release is published (created by Semantic Release)
   release:
     types: [published, created]
+  # Allow manual triggering
   workflow_dispatch:
     inputs:
       version:
@@ -19,16 +15,12 @@ jobs:
   publish:
     name: Publish to Marketplace
     runs-on: ubuntu-latest
-    # When triggered by workflow_run, only run if Release workflow succeeded (a release was actually published)
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          # When triggered after Release, get latest main (with version bump and changelog)
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -81,18 +73,18 @@ jobs:
           echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
       - name: Upload VSIX to GitHub Release
-        # Upload to release when triggered by a release event or after Semantic Release (workflow_run)
-        if: github.event_name == 'release' || github.event_name == 'workflow_run'
+        # Only upload to release when triggered by a release event (not manual workflow_dispatch)
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.vsix.outputs.filename }}
-          tag_name: ${{ github.event.release.tag_name || steps.vsix.outputs.tag }}
+          tag_name: ${{ github.event.release.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to Marketplace
-        # Publish when triggered by a release event or after Semantic Release (workflow_run); skip for manual workflow_dispatch
-        if: github.event_name == 'release' || github.event_name == 'workflow_run'
+        # Only publish when triggered by a release event (not manual workflow_dispatch)
+        if: github.event_name == 'release'
         run: pnpm run publish
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}

@@ -150,11 +150,14 @@ Workflow: [.github/workflows/release.yml](.github/workflows/release.yml). Config
 
 ### Publishing to Marketplace
 
-When a GitHub release is created, the [publish workflow](.github/workflows/publish.yml) automatically:
+When a GitHub release is created by Semantic Release, the [publish workflow](.github/workflows/publish.yml) automatically:
 
 1. Builds the extension (`pnpm run compile` + `pnpm run webpack`)
 2. Packages it (`pnpm run package`)
-3. Publishes to VSCode Marketplace (`pnpm run publish`)
+3. Uploads the `.vsix` file to the GitHub release assets
+4. Publishes to VSCode Marketplace (`pnpm run publish`)
+
+**Note**: Commits with `chore:`, `docs:`, or other non-release types don't trigger publishing since Semantic Release doesn't create a release for them.
 
 **Required Secret**: `VSCE_PAT` - Personal Access Token from [Azure DevOps](https://dev.azure.com/) with Marketplace publish permissions.
 
