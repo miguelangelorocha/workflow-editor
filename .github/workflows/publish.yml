@@ -13,7 +13,7 @@ on:
 
 jobs:
   publish:
-    name: Publish to Marketplace
+    name: Publish to Marketplaces
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -82,9 +82,45 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to Marketplace
+      - name: Publish to VS Code Marketplace
+        id: publish-vscode
         # Only publish when triggered by a release event (not manual workflow_dispatch)
         if: github.event_name == 'release'
+        continue-on-error: true
         run: pnpm run publish
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX Registry
+        id: publish-ovsx
+        # Only publish when triggered by a release event (not manual workflow_dispatch)
+        if: github.event_name == 'release'
+        continue-on-error: true
+        run: npx ovsx publish *.vsix -p $OVSX_PAT
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+      - name: Report publish status
+        if: github.event_name == 'release'
+        run: |
+          echo "## Publish Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.publish-vscode.outcome }}" == "success" ]; then
+            echo "✅ VS Code Marketplace: Published successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ VS Code Marketplace: Failed to publish" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.publish-ovsx.outcome }}" == "success" ]; then
+            echo "✅ Open VSX Registry: Published successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Open VSX Registry: Failed to publish" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Fail the job if both marketplaces failed
+          if [ "${{ steps.publish-vscode.outcome }}" != "success" ] && [ "${{ steps.publish-ovsx.outcome }}" != "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ Both marketplaces failed to publish" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

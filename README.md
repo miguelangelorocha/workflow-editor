@@ -26,7 +26,7 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 
 1. Open VSCode (or Cursor, Windsurf, or other VSCode-based IDE)
 2. Go to Extensions (Ctrl+Shift+X / Cmd+Shift+X)
-3. Search for "Workflow Editor"
+3. Search for "Workflow Visual Editor"
 4. Click Install
 
 ### From VSIX
