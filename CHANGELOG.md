@@ -1,3 +1,10 @@
+## [1.2.14](https://github.com/timoa/workflow-editor/compare/v1.2.13...v1.2.14) (2026-02-09)
+
+
+### Bug Fixes
+
+* **cicd:** add deployment to OpenVSX marketplace for Cursor, Windsurf, etc; ([7ea4d69](https://github.com/timoa/workflow-editor/commit/7ea4d69b9f79568503bbab69af779a2e1d116b68))
+
 ## [1.2.13](https://github.com/timoa/workflow-editor/compare/v1.2.12...v1.2.13) (2026-02-09)
 
 
