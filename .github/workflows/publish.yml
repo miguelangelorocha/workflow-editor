@@ -84,8 +84,8 @@ jobs:
 
       - name: Publish to VS Code Marketplace
         id: publish-vscode
-        # Only publish when triggered by a release event (not manual workflow_dispatch)
-        if: github.event_name == 'release'
+        # Publish when triggered by release event or manual workflow_dispatch
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: pnpm run publish
         env:
@@ -93,15 +93,15 @@ jobs:
 
       - name: Publish to Open VSX Registry
         id: publish-ovsx
-        # Only publish when triggered by a release event (not manual workflow_dispatch)
-        if: github.event_name == 'release'
+        # Publish when triggered by release event or manual workflow_dispatch
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: npx ovsx publish *.vsix -p $OVSX_PAT
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
       - name: Report publish status
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         run: |
           echo "## Publish Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
