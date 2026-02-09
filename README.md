@@ -31,10 +31,12 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 
 ### From VSIX
 
-1. Download the `.vsix` file from [Releases](https://github.com/timoa/workflow-editor/releases)
+1. Download the `.vsix` file from the [latest release](https://github.com/timoa/workflow-editor/releases/latest)
 2. Open VSCode
 3. Go to Extensions → ... → Install from VSIX...
 4. Select the downloaded `.vsix` file
+
+**Note**: The `.vsix` file is attached to each GitHub release as an asset.
 
 ## Usage
 
