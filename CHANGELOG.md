@@ -1,3 +1,10 @@
+## [1.2.15](https://github.com/timoa/workflow-editor/compare/v1.2.14...v1.2.15) (2026-02-09)
+
+
+### Bug Fixes
+
+* **jobs:** ad more space for editing the "with" action input values ([a20b63d](https://github.com/timoa/workflow-editor/commit/a20b63d8c68b90ed2dc9c7054fa1a992e25d1ccf))
+
 ## [1.2.14](https://github.com/timoa/workflow-editor/compare/v1.2.13...v1.2.14) (2026-02-09)
 
 
