@@ -791,7 +791,7 @@ export function JobPropertyPanel({
                                     with: Object.keys(newWith).length > 0 ? newWith : undefined,
                                   }))
                                 }}
-                                className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                                className="w-1/3 flex-shrink-0 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
                                 placeholder="Input name"
                               />
                               <input
@@ -808,7 +808,7 @@ export function JobPropertyPanel({
                                   }
                                   updateStep(index, (s) => ({ ...s, with: newWith }))
                                 }}
-                                className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                                className="flex-1 font-mono rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
                                 placeholder="Value"
                               />
                               <button
