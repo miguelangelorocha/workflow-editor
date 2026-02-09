@@ -1,3 +1,10 @@
+## [1.2.13](https://github.com/timoa/workflow-editor/compare/v1.2.12...v1.2.13) (2026-02-09)
+
+
+### Bug Fixes
+
+* **jobs:** use a syntax highlighting module to edit "runs" code ([f9b956e](https://github.com/timoa/workflow-editor/commit/f9b956e99e0e54d8e4b62f2cf72cc88116184392))
+
 ## [1.2.12](https://github.com/timoa/workflow-editor/compare/v1.2.11...v1.2.12) (2026-02-08)
 
 
