@@ -26,9 +26,16 @@ export function openWorkflowFromYaml(yamlContent: string): OpenResult {
   return { workflow, errors }
 }
 
-export function saveWorkflowToFile(workflow: Workflow, filename: string = 'workflow.yml'): void {
-  const yaml = serializeWorkflow(workflow)
-  // Send save request to extension via VSCode message API
+/**
+ * Save workflow to file. If content is provided (e.g. from source dialog with comments),
+ * that string is written; otherwise the workflow is serialized to YAML.
+ */
+export function saveWorkflowToFile(
+  workflow: Workflow,
+  filename: string = 'workflow.yml',
+  content?: string
+): void {
+  const yaml = content ?? serializeWorkflow(workflow)
   const vscodeApi = getVscode()
   if (vscodeApi && vscodeApi.postMessage) {
     vscodeApi.postMessage({

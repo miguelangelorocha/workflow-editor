@@ -15,7 +15,7 @@ interface SourceCodeDialogProps {
   initialYaml: string
   filename?: string
   onClose: () => void
-  onSave: (workflow: Workflow, errors: string[]) => void
+  onSave: (workflow: Workflow, errors: string[], savedYaml: string) => void
 }
 
 const yamlLanguage = StreamLanguage.define(yaml)
@@ -136,7 +136,7 @@ export function SourceCodeDialog({
     }
     const lintErrs = validateWorkflowYaml(yamlContent, filename)
     setLintErrors(lintErrs)
-    onSave(workflow, errors)
+    onSave(workflow, errors, yamlContent)
     onClose()
   }
 

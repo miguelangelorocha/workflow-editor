@@ -20,7 +20,7 @@ import { WorkflowPropertyPanel } from './components/WorkflowPropertyPanel'
 import { SourceCodeDialog } from './components/SourceCodeDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { openWorkflowFromYaml, saveWorkflowToFile, getVscode } from './lib/fileHandling'
-import { serializeWorkflow } from './lib/serializeWorkflow'
+import { serializeWorkflow, mergeWorkflowIntoYaml } from './lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from './lib/triggerUtils'
 import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
 import {
@@ -56,6 +56,7 @@ const sampleWorkflow: Workflow = {
 function AppInner() {
   const [, setTheme] = useState<'light' | 'dark'>('dark')
   const [workflow, setWorkflow] = useState<Workflow | null>(null)
+  const [originalYaml, setOriginalYaml] = useState<string | null>(null)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const undoStackRef = useRef<Workflow[]>([])
 
@@ -98,6 +99,7 @@ function AppInner() {
       setIsEditingWorkflowName(false)
       isUpdatingWorkflowRef.current = true
       setWorkflow(w)
+      setOriginalYaml(content)
       setParseErrors(errors)
       setCurrentFilename(filename || 'workflow.yml')
       if (selectedJobId && w.jobs[selectedJobId]) {
@@ -282,9 +284,11 @@ function AppInner() {
 
   const handleSave = useCallback(() => {
     if (!workflow) return
-    const name = workflow.name?.replace(/\s+/g, '-').toLowerCase() || 'workflow'
-    saveWorkflowToFile(workflow, `${name}.yml`)
-  }, [workflow])
+    const contentToSave =
+      originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
+    saveWorkflowToFile(workflow, currentFilename, contentToSave)
+    setOriginalYaml(contentToSave)
+  }, [workflow, originalYaml, currentFilename])
 
   const generateUniqueJobId = useCallback((existingIds: string[]): string => {
     let counter = 1
@@ -475,15 +479,19 @@ function AppInner() {
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 pr-4 box-border max-w-full overflow-x-hidden">
       {showSourceDialog && workflow && (
         <SourceCodeDialog
-          initialYaml={serializeWorkflow(workflow)}
+          initialYaml={
+            originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
+          }
           filename={currentFilename}
           onClose={() => setShowSourceDialog(false)}
-          onSave={(w, errors) => {
+          onSave={(w, errors, savedYaml) => {
             pushUndoState(workflow)
             setIsEditingWorkflowName(false)
             isUpdatingWorkflowRef.current = true
             setWorkflow(w)
+            setOriginalYaml(savedYaml)
             setParseErrors(errors)
+            saveWorkflowToFile(w, currentFilename, savedYaml)
             setTimeout(() => {
               isUpdatingWorkflowRef.current = false
             }, 100)
@@ -557,6 +565,7 @@ function AppInner() {
             onClick={() => {
               if (workflow) pushUndoState(workflow)
               setIsEditingWorkflowName(false)
+              setOriginalYaml(null)
               setWorkflow(workflow ? null : sampleWorkflow)
             }}
             className="rounded p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"

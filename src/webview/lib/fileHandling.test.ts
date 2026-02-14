@@ -1,6 +1,44 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { openWorkflowFromYaml, validateWorkflow, getVscode, saveWorkflowToFile, requestOpenFile } from './fileHandling'
+import { serializeWorkflow } from './serializeWorkflow'
 import type { Workflow } from '@/types/workflow'
+
+describe('comment preservation', () => {
+  it('parse then serialize drops comments so original string is needed for source dialog', () => {
+    const yamlWithComments = `# Build and test
+name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi
+`
+    const { workflow, errors } = openWorkflowFromYaml(yamlWithComments)
+    expect(errors).toEqual([])
+    const serialized = serializeWorkflow(workflow)
+    expect(serialized).not.toContain('# Build and test')
+    expect(yamlWithComments).toContain('# Build and test')
+    expect(serialized).toContain('name: CI')
+  })
+
+  it('when originalYaml is used as initialYaml it preserves comments', () => {
+    const originalContent = `# Comment line
+name: WithComment
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ok
+`
+    const { workflow } = openWorkflowFromYaml(originalContent)
+    const initialYaml = originalContent ?? serializeWorkflow(workflow)
+    expect(initialYaml).toBe(originalContent)
+    expect(initialYaml).toContain('# Comment line')
+  })
+
+})
 
 describe('openWorkflowFromYaml', () => {
   it('returns workflow and errors from parseWorkflow', () => {
@@ -121,6 +159,32 @@ describe('VSCode integration helpers', () => {
     const payload = postMessage.mock.calls[0][0] as { content: string }
     expect(typeof payload.content).toBe('string')
     expect(payload.content).toContain('name: Save test')
+  })
+
+  it('saveWorkflowToFile with content argument sends that content', () => {
+    const postMessage = vi.fn()
+    const g = globalThis as unknown as { window?: { vscode?: unknown } }
+    g.window = { vscode: { postMessage } }
+
+    const workflow: Workflow = {
+      name: 'X',
+      on: 'push',
+      jobs: {
+        build: {
+          'runs-on': 'ubuntu-latest',
+          steps: [{ run: 'echo hi' }],
+        },
+      },
+    }
+    const contentWithComment =
+      '# Preserved comment\nname: X\non: push\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo hi\n'
+
+    saveWorkflowToFile(workflow, 'out.yml', contentWithComment)
+
+    expect(postMessage).toHaveBeenCalledTimes(1)
+    const payload = postMessage.mock.calls[0][0] as { content: string }
+    expect(payload.content).toBe(contentWithComment)
+    expect(payload.content).toContain('# Preserved comment')
   })
 
   it('saveWorkflowToFile logs error when vscode API is missing', () => {
