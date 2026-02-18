@@ -140,12 +140,12 @@ describe('triggersToOn', () => {
     expect(result).toEqual({ schedule: [{ cron: '0 0 * * *' }] })
   })
 
-  it('converts multiple non-schedule triggers to array', () => {
+  it('converts multiple non-schedule triggers to object format', () => {
     const result = triggersToOn([
       { event: 'push', config: {} },
       { event: 'pull_request', config: {} },
     ])
-    expect(result).toEqual(['push', 'pull_request'])
+    expect(result).toEqual({ push: null, pull_request: null })
   })
 })
 

@@ -140,27 +140,25 @@ describe('triggersToOn', () => {
     expect(result).toEqual({ schedule: [{ cron: '0 0 * * *' }] })
   })
 
-  it('converts multiple non-schedule triggers to array', () => {
+  it('converts multiple non-schedule triggers to object format', () => {
     const result = triggersToOn([
       { event: 'push', config: {} },
       { event: 'pull_request', config: {} },
     ])
-    expect(result).toEqual(['push', 'pull_request'])
+    expect(result).toEqual({ push: null, pull_request: null })
   })
 
-  it('merges multiple non-schedule triggers with schedule into array format', () => {
+  it('merges multiple non-schedule triggers with schedule into object format', () => {
     const result = triggersToOn([
       { event: 'push', config: {} },
       { event: 'pull_request', config: { types: ['opened'] } },
       { event: 'schedule', config: { cron: '0 0 * * *' } },
     ])
 
-    expect(Array.isArray(result)).toBe(true)
-    const arr = result as unknown[]
-    expect(arr).toHaveLength(3)
-    expect(arr[0]).toBe('push')
-    expect(arr[1]).toEqual({ pull_request: { types: ['opened'] } })
-    expect(arr[2]).toEqual({
+    expect(Array.isArray(result)).toBe(false)
+    expect(result).toEqual({
+      push: null,
+      pull_request: { types: ['opened'] },
       schedule: [{ cron: '0 0 * * *' }],
     })
   })
