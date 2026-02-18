@@ -1,3 +1,12 @@
+## [1.2.24](https://github.com/timoa/workflow-editor/compare/v1.2.23...v1.2.24) (2026-02-18)
+
+
+### Bug Fixes
+
+* **linter:** keep the comments in the code [#21](https://github.com/timoa/workflow-editor/issues/21) ([a6d337a](https://github.com/timoa/workflow-editor/commit/a6d337ab8ec5b87c07bb568f9739a79a34b58f42))
+* **workflow:** fix the version comment at the end of the GitHub Actions [#21](https://github.com/timoa/workflow-editor/issues/21) ([629602b](https://github.com/timoa/workflow-editor/commit/629602b97dc95e6b691b2bed7647cbc498c2f904))
+* **workflow:** Try to keep the YAML multilines folder string in multilines [#21](https://github.com/timoa/workflow-editor/issues/21) ([97420d3](https://github.com/timoa/workflow-editor/commit/97420d3df528a2ebfff8ae0d04987831ba8de9b4))
+
 ## [1.2.23](https://github.com/timoa/workflow-editor/compare/v1.2.22...v1.2.23) (2026-02-13)
 
 
