@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { parseWorkflow } from './parseWorkflow'
-import { serializeWorkflow } from './serializeWorkflow'
+import { serializeWorkflow, mergeWorkflowIntoYaml } from './serializeWorkflow'
 
 const minimalWorkflow = `
 name: Minimal
@@ -203,5 +203,43 @@ describe('serializeWorkflow', () => {
     expect(again.jobs.build.strategy?.matrix).toEqual({ node: ['18', '20'] })
     expect(again.jobs.build.strategy?.['fail-fast']).toBe(true)
     expect(again.jobs.build.strategy?.['max-parallel']).toBe(3)
+  })
+})
+
+describe('mergeWorkflowIntoYaml', () => {
+  it('preserves comments when merging workflow with new job into original YAML', () => {
+    const originalYaml = `# CI workflow with comments
+name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo build
+`
+    const { workflow } = parseWorkflow(originalYaml)
+    workflow.jobs['test'] = {
+      'runs-on': 'ubuntu-latest',
+      needs: 'build',
+      steps: [{ run: 'echo test' }],
+    }
+    const merged = mergeWorkflowIntoYaml(originalYaml, workflow)
+    expect(merged).toContain('# CI workflow with comments')
+    expect(merged).toContain('name: CI')
+    expect(merged).toContain('echo test')
+    expect(merged).toContain('echo test')
+    const { workflow: again, errors } = parseWorkflow(merged)
+    expect(errors).toEqual([])
+    expect(again.jobs.build).toBeDefined()
+    expect(again.jobs.test).toBeDefined()
+    expect(again.jobs.test?.steps[0].run).toBe('echo test')
+  })
+
+  it('falls back to serializeWorkflow when original YAML has parse errors', () => {
+    const badYaml = 'name: X\non: push\njobs:\n  build: ['
+    const workflow = parseWorkflow(minimalWorkflow).workflow
+    const merged = mergeWorkflowIntoYaml(badYaml, workflow)
+    expect(merged).toContain('name: Minimal')
+    expect(merged).not.toContain('[')
   })
 })
