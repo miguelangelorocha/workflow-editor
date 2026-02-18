@@ -1,12 +1,21 @@
-import YAML from 'yaml'
+import YAML, { isMap, isSeq, isScalar } from 'yaml'
 import type { Workflow } from '@/types/workflow'
 
 const STRINGIFY_OPTS = {
   indent: 2,
-  lineWidth: 80,
+  lineWidth: 0,
   collectionStyle: 'block' as const,
   defaultStringType: 'PLAIN' as const,
   blockQuote: 'folded' as const,
+}
+
+// Used when merging into an existing document: omits blockQuote so that
+// scalar types already present in the parsed AST are not overridden.
+const MERGE_STRINGIFY_OPTS = {
+  indent: 2,
+  lineWidth: 0,
+  collectionStyle: 'block' as const,
+  defaultStringType: 'PLAIN' as const,
 }
 
 /**
@@ -32,14 +41,14 @@ export function mergeWorkflowIntoYaml(originalYaml: string, workflow: Workflow):
     const contents = doc.contents as { get?: (k: unknown) => unknown; set?: (k: unknown, v: unknown) => void; items?: unknown[] } | null
     if (!contents || typeof contents.get !== 'function') return serializeWorkflow(workflow)
 
-    const jobsMap = doc.get('jobs', true) as { set?: (k: unknown, v: unknown) => void; delete?: (k: unknown) => boolean; items?: { key: { value?: string } }[] } | undefined
+    const jobsMap = doc.get('jobs', true) as { get?: (k: unknown, keepScalar?: boolean) => unknown; set?: (k: unknown, v: unknown) => void; delete?: (k: unknown) => boolean; items?: { key: { value?: string } }[] } | undefined
     if (!jobsMap || typeof jobsMap.set !== 'function') {
       doc.set('name', doc.createNode(workflow.name))
       doc.set('run-name', doc.createNode(workflow['run-name']))
       doc.set('on', doc.createNode(workflow.on))
       if (workflow.env && Object.keys(workflow.env).length > 0) doc.set('env', doc.createNode(workflow.env))
       doc.set('jobs', doc.createNode(jobsToPlainObject(workflow.jobs)))
-      return doc.toString(STRINGIFY_OPTS)
+      return doc.toString(MERGE_STRINGIFY_OPTS)
     }
 
     doc.set('name', doc.createNode(workflow.name))
@@ -48,7 +57,10 @@ export function mergeWorkflowIntoYaml(originalYaml: string, workflow: Workflow):
     if (workflow.env && Object.keys(workflow.env).length > 0) doc.set('env', doc.createNode(workflow.env))
 
     for (const [jobId, job] of Object.entries(workflow.jobs)) {
-      jobsMap.set(jobId, doc.createNode(jobToPlainObjectSingle(job)))
+      const originalJobNode = typeof jobsMap.get === 'function' ? jobsMap.get(jobId, true) : undefined
+      const newJobNode = doc.createNode(jobToPlainObjectSingle(job))
+      if (originalJobNode !== undefined) transferComments(originalJobNode, newJobNode)
+      jobsMap.set(jobId, newJobNode)
     }
     const items = jobsMap.items ?? []
     const keysToDelete: unknown[] = []
@@ -61,7 +73,7 @@ export function mergeWorkflowIntoYaml(originalYaml: string, workflow: Workflow):
       if (typeof jobsMap.delete === 'function') jobsMap.delete(k)
     }
 
-    return doc.toString(STRINGIFY_OPTS)
+    return doc.toString(MERGE_STRINGIFY_OPTS)
   } catch {
     return serializeWorkflow(workflow)
   }
@@ -100,6 +112,37 @@ function jobToPlainObjectSingle(job: import('@/types/workflow').WorkflowJob): Re
     if (Object.keys(strategyObj).length > 0) j.strategy = strategyObj
   }
   return j
+}
+
+/**
+ * Recursively copy comments from an original parsed AST node to a freshly
+ * created node. Maps are matched by key name; sequences by position; scalars
+ * by value equality. This preserves inline comments such as `# v2.14.0`
+ * that appear after `uses:` SHA pins through the create-node → toString cycle.
+ */
+function transferComments(original: unknown, updated: unknown): void {
+  if (isScalar(original) && isScalar(updated)) {
+    if (original.value === updated.value) {
+      if (original.comment !== undefined) updated.comment = original.comment
+      if (original.commentBefore !== undefined) updated.commentBefore = original.commentBefore
+    }
+    return
+  }
+  if (isMap(original) && isMap(updated)) {
+    for (const origPair of original.items) {
+      const origKey = isScalar(origPair.key) ? String(origPair.key.value) : String(origPair.key)
+      const newPair = updated.items.find((p) => {
+        const k = isScalar(p.key) ? String(p.key.value) : String(p.key)
+        return k === origKey
+      })
+      if (newPair) transferComments(origPair.value, newPair.value)
+    }
+    return
+  }
+  if (isSeq(original) && isSeq(updated)) {
+    const len = Math.min(original.items.length, updated.items.length)
+    for (let i = 0; i < len; i++) transferComments(original.items[i], updated.items[i])
+  }
 }
 
 function stepToSerializable(step: import('@/types/workflow').WorkflowStep): Record<string, unknown> {
