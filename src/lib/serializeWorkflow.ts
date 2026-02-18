@@ -44,9 +44,10 @@ export function serializeWorkflow(workflow: Workflow): string {
 
   return YAML.stringify(obj, {
     indent: 2,
-    lineWidth: 0,
+    lineWidth: 80,
     collectionStyle: 'block',
     defaultStringType: 'PLAIN',
+    blockQuote: 'folded',
   })
 }
 

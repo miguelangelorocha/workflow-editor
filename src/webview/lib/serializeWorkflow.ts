@@ -3,9 +3,10 @@ import type { Workflow } from '@/types/workflow'
 
 const STRINGIFY_OPTS = {
   indent: 2,
-  lineWidth: 0,
+  lineWidth: 80,
   collectionStyle: 'block' as const,
   defaultStringType: 'PLAIN' as const,
+  blockQuote: 'folded' as const,
 }
 
 /**
