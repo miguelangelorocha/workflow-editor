@@ -144,68 +144,34 @@ export function getTriggerLabel(trigger: ParsedTrigger): string {
 }
 
 /**
- * Convert parsed triggers back to workflow `on` format
+ * Convert parsed triggers back to workflow `on` format.
+ * Always uses the object form so that trigger configs (inputs, branches, etc.)
+ * are preserved correctly regardless of how many triggers are present.
  */
 export function triggersToOn(triggers: ParsedTrigger[]): Workflow['on'] {
   if (triggers.length === 0) {
     return {}
   }
 
-  // Group schedule triggers separately (they need special array format)
-  const scheduleTriggers = triggers.filter((t) => t.event === 'schedule')
-  const otherTriggers = triggers.filter((t) => t.event !== 'schedule')
-
   const result: Record<string, unknown> = {}
 
-  // Handle schedule triggers - convert to array format
-  if (scheduleTriggers.length > 0) {
-    result.schedule = scheduleTriggers.map((trigger) => ({
-      cron: trigger.config.cron || '0 0 * * *',
-    }))
-  }
-
-  // Handle other triggers
-  if (otherTriggers.length === 1) {
-    const trigger = otherTriggers[0]
-    if (Object.keys(trigger.config).length === 0) {
-      result[trigger.event] = {}
+  for (const trigger of triggers) {
+    if (trigger.event === 'schedule') {
+      // Schedule triggers require an array of { cron } objects
+      const existing = result.schedule as { cron: string }[] | undefined
+      const entry = { cron: trigger.config.cron || '0 0 * * *' }
+      result.schedule = existing ? [...existing, entry] : [entry]
     } else {
-      result[trigger.event] = trigger.config
+      result[trigger.event] =
+        Object.keys(trigger.config).length === 0 ? null : trigger.config
     }
-  } else if (otherTriggers.length > 1) {
-    // Multiple non-schedule triggers - use array format
-    const triggerArray = otherTriggers.map((trigger) => {
-      if (Object.keys(trigger.config).length === 0) {
-        return trigger.event
-      }
-      return { [trigger.event]: trigger.config }
-    })
-    // If we have schedule triggers too, we need to merge into array format
-    if (scheduleTriggers.length > 0) {
-      return [
-        ...triggerArray,
-        {
-          schedule: scheduleTriggers.map((trigger) => ({
-            cron: trigger.config.cron || '0 0 * * *',
-          })),
-        },
-      ]
-    }
-    return triggerArray
   }
 
-  // If only schedule triggers, return just the schedule object
-  if (scheduleTriggers.length > 0 && otherTriggers.length === 0) {
-    return result
-  }
+  const keys = Object.keys(result)
 
-  // Single non-schedule trigger
-  if (otherTriggers.length === 1 && scheduleTriggers.length === 0) {
-    const trigger = otherTriggers[0]
-    if (Object.keys(trigger.config).length === 0) {
-      return trigger.event
-    }
-    return { [trigger.event]: trigger.config }
+  // Single event with no config → compact string form: `on: push`
+  if (keys.length === 1 && !('schedule' in result) && result[keys[0]] === null) {
+    return keys[0]
   }
 
   return result
