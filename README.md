@@ -17,6 +17,7 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 - **Diagram**: Jobs as nodes, edges from `needs` dependencies. Built with [React Flow](https://reactflow.dev/).
 - **Trigger visualization**: Visual trigger nodes showing workflow triggers (push, pull_request, schedule, etc.) with connections to jobs.
 - **Trigger editing**: Edit workflow triggers with a dedicated panel supporting all trigger types and configurations (branches, tags, paths, cron schedules, etc.).
+- **Workflow dispatch inputs**: Define `workflow_dispatch` and `workflow_call` inputs directly in the trigger panel — set name, description, type (string, boolean, number, choice, environment), required flag, and default value.
 - **Property panel**: Click a job node to edit name, runs-on, needs, matrix strategy, and steps (N8N-style).
 - **Matrix strategy**: Configure matrix builds with multiple variable combinations. Visual indicator shows total matrix combinations (e.g., "6× matrix").
 - **Source code preview**: View and edit workflow YAML in a large dialog. Changes apply only when saved.

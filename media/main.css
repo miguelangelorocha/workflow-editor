@@ -1505,6 +1505,10 @@ body {
   background-color: rgb(51 65 85 / var(--tw-bg-opacity, 1));
 }
 
+.dark\:bg-slate-700\/30:is(.dark *) {
+  background-color: rgb(51 65 85 / 0.3);
+}
+
 .dark\:bg-slate-700\/50:is(.dark *) {
   background-color: rgb(51 65 85 / 0.5);
 }
