@@ -1,3 +1,12 @@
+## [1.2.25](https://github.com/timoa/workflow-editor/compare/v1.2.24...v1.2.25) (2026-02-18)
+
+
+### Bug Fixes
+
+* **trigger:** add missing inputs fo the workflow_dispatch event [#34](https://github.com/timoa/workflow-editor/issues/34) ([87356c5](https://github.com/timoa/workflow-editor/commit/87356c5e24e3406c28e8b1182a649f68e57d2196))
+* **trigger:** add missing test coverage [#34](https://github.com/timoa/workflow-editor/issues/34) ([c489e94](https://github.com/timoa/workflow-editor/commit/c489e94d883def4f99e6c6a5616a1edf1baad6fb))
+* **trigger:** fix the unit-tests [#34](https://github.com/timoa/workflow-editor/issues/34) ([f362845](https://github.com/timoa/workflow-editor/commit/f36284509894ff8881fff798a43bc00a708f1ff8))
+
 ## [1.2.24](https://github.com/timoa/workflow-editor/compare/v1.2.23...v1.2.24) (2026-02-18)
 
 
