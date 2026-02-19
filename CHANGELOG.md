@@ -1,3 +1,21 @@
+## [1.2.25](https://github.com/timoa/workflow-editor/compare/v1.2.24...v1.2.25) (2026-02-18)
+
+
+### Bug Fixes
+
+* **trigger:** add missing inputs fo the workflow_dispatch event [#34](https://github.com/timoa/workflow-editor/issues/34) ([87356c5](https://github.com/timoa/workflow-editor/commit/87356c5e24e3406c28e8b1182a649f68e57d2196))
+* **trigger:** add missing test coverage [#34](https://github.com/timoa/workflow-editor/issues/34) ([c489e94](https://github.com/timoa/workflow-editor/commit/c489e94d883def4f99e6c6a5616a1edf1baad6fb))
+* **trigger:** fix the unit-tests [#34](https://github.com/timoa/workflow-editor/issues/34) ([f362845](https://github.com/timoa/workflow-editor/commit/f36284509894ff8881fff798a43bc00a708f1ff8))
+
+## [1.2.24](https://github.com/timoa/workflow-editor/compare/v1.2.23...v1.2.24) (2026-02-18)
+
+
+### Bug Fixes
+
+* **linter:** keep the comments in the code [#21](https://github.com/timoa/workflow-editor/issues/21) ([a6d337a](https://github.com/timoa/workflow-editor/commit/a6d337ab8ec5b87c07bb568f9739a79a34b58f42))
+* **workflow:** fix the version comment at the end of the GitHub Actions [#21](https://github.com/timoa/workflow-editor/issues/21) ([629602b](https://github.com/timoa/workflow-editor/commit/629602b97dc95e6b691b2bed7647cbc498c2f904))
+* **workflow:** Try to keep the YAML multilines folder string in multilines [#21](https://github.com/timoa/workflow-editor/issues/21) ([97420d3](https://github.com/timoa/workflow-editor/commit/97420d3df528a2ebfff8ae0d04987831ba8de9b4))
+
 ## [1.2.23](https://github.com/timoa/workflow-editor/compare/v1.2.22...v1.2.23) (2026-02-13)
 
 

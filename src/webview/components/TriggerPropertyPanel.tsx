@@ -431,6 +431,118 @@ export function TriggerPropertyPanel({
                       </p>
                     </div>
                   )}
+
+                  {/* Workflow Dispatch / Workflow Call Inputs */}
+                  {(trigger.event === 'workflow_dispatch' || trigger.event === 'workflow_call') && (
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Inputs</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const inputs = { ...(trigger.config.inputs ?? {}) }
+                            const newKey = `input_${Object.keys(inputs).length + 1}`
+                            inputs[newKey] = { description: '', required: false, default: '', type: 'string' }
+                            updateTriggerConfig(index, 'inputs', inputs)
+                          }}
+                          className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+                        >
+                          + Add Input
+                        </button>
+                      </div>
+                      {Object.keys(trigger.config.inputs ?? {}).length === 0 ? (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 italic">No inputs defined</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {Object.entries(trigger.config.inputs ?? {}).map(([inputName, inputConfig], inputIdx) => (
+                            <div key={inputIdx} className="rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/30 p-2 space-y-1.5">
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="text"
+                                  value={inputName}
+                                  onChange={(e) => {
+                                    const newName = e.target.value
+                                    const currentInputs = trigger.config.inputs ?? {}
+                                    const newInputs: typeof currentInputs = {}
+                                    for (const [k, v] of Object.entries(currentInputs)) {
+                                      newInputs[k === inputName ? newName : k] = v
+                                    }
+                                    updateTriggerConfig(index, 'inputs', newInputs)
+                                  }}
+                                  className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs font-medium"
+                                  placeholder="input_name"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newInputs = { ...(trigger.config.inputs ?? {}) }
+                                    delete newInputs[inputName]
+                                    updateTriggerConfig(index, 'inputs', newInputs)
+                                  }}
+                                  className="rounded p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-600 dark:hover:text-slate-300"
+                                  aria-label={`Remove input ${inputName}`}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              <input
+                                type="text"
+                                value={inputConfig.description ?? ''}
+                                onChange={(e) => {
+                                  const newInputs = { ...(trigger.config.inputs ?? {}) }
+                                  newInputs[inputName] = { ...newInputs[inputName], description: e.target.value }
+                                  updateTriggerConfig(index, 'inputs', newInputs)
+                                }}
+                                className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
+                                placeholder="Description"
+                              />
+                              <div className="flex items-center gap-2">
+                                <select
+                                  value={inputConfig.type ?? 'string'}
+                                  onChange={(e) => {
+                                    const newInputs = { ...(trigger.config.inputs ?? {}) }
+                                    newInputs[inputName] = { ...newInputs[inputName], type: e.target.value }
+                                    updateTriggerConfig(index, 'inputs', newInputs)
+                                  }}
+                                  className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
+                                >
+                                  <option value="string">string</option>
+                                  <option value="boolean">boolean</option>
+                                  <option value="number">number</option>
+                                  <option value="choice">choice</option>
+                                  <option value="environment">environment</option>
+                                </select>
+                                <label className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300 shrink-0">
+                                  <input
+                                    type="checkbox"
+                                    checked={inputConfig.required ?? false}
+                                    onChange={(e) => {
+                                      const newInputs = { ...(trigger.config.inputs ?? {}) }
+                                      newInputs[inputName] = { ...newInputs[inputName], required: e.target.checked }
+                                      updateTriggerConfig(index, 'inputs', newInputs)
+                                    }}
+                                    className="rounded"
+                                  />
+                                  Required
+                                </label>
+                              </div>
+                              <input
+                                type="text"
+                                value={inputConfig.default ?? ''}
+                                onChange={(e) => {
+                                  const newInputs = { ...(trigger.config.inputs ?? {}) }
+                                  newInputs[inputName] = { ...newInputs[inputName], default: e.target.value }
+                                  updateTriggerConfig(index, 'inputs', newInputs)
+                                }}
+                                className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
+                                placeholder="Default value (optional)"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

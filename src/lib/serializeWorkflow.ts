@@ -47,6 +47,7 @@ export function serializeWorkflow(workflow: Workflow): string {
     lineWidth: 0,
     collectionStyle: 'block',
     defaultStringType: 'PLAIN',
+    blockQuote: 'folded',
   })
 }
 
