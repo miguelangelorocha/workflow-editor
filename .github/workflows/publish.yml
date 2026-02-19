@@ -15,6 +15,8 @@ on:
         description: 'Version to publish (e.g., 1.0.0)'
         required: false
 
+# Declare default permissions as read only.
+permissions: read-all
 jobs:
   publish:
     name: Publish to Marketplaces
