@@ -17,6 +17,7 @@ on:
 
 # Declare default permissions as read only.
 permissions: read-all
+
 jobs:
   publish:
     name: Publish to Marketplaces

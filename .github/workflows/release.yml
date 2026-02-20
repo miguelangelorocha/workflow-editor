@@ -136,4 +136,18 @@ jobs:
       ref: main
     permissions:
       contents: write
+      actions: read
+      attestations: read
+      checks: read
+      deployments: read
+      discussions: read
+      id-token: read
+      issues: read
+      models: read
+      packages: read
+      pages: read
+      pull-requests: read
+      repository-projects: read
+      security-events: read
+      statuses: read
     secrets: inherit
