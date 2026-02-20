@@ -1,3 +1,16 @@
+## [1.2.26](https://github.com/timoa/workflow-editor/compare/v1.2.25...v1.2.26) (2026-02-20)
+
+
+### Bug Fixes
+
+* **cicd:** add missing egress URL to allow [#40](https://github.com/timoa/workflow-editor/issues/40) ([d6528c5](https://github.com/timoa/workflow-editor/commit/d6528c53a2be51820f98a10386173deb26687652))
+* **cicd:** add missing Harden GitHub Actions Runner on new workflows [#40](https://github.com/timoa/workflow-editor/issues/40) ([3404dff](https://github.com/timoa/workflow-editor/commit/3404dffb1bbc32228a6a5b59962984c6f9b1bd8f))
+* **deps:** can't fix the dev dependencies related to ESLint since it is a false positive [#40](https://github.com/timoa/workflow-editor/issues/40) ([d5697a6](https://github.com/timoa/workflow-editor/commit/d5697a62a734dceb7a98123e1553370e4b8e52a0))
+* **deps:** fix eslint issue [#40](https://github.com/timoa/workflow-editor/issues/40) ([a606d84](https://github.com/timoa/workflow-editor/commit/a606d84052c6dd3605e3f95dfb22a342b340e931))
+* **deps:** fix the GHSA-2g4f-4pwh-qvx6 vulnerability [#40](https://github.com/timoa/workflow-editor/issues/40) ([a69388b](https://github.com/timoa/workflow-editor/commit/a69388b358958cdf283a3753287de8e9e7e5d8d8))
+* **deps:** fix vulnerability (minimatch) [#40](https://github.com/timoa/workflow-editor/issues/40) ([dd257b0](https://github.com/timoa/workflow-editor/commit/dd257b09c149138ea708a00b16c61d8ff2e92f72))
+* **security:** fix the deps vulnerabilities from scorecard [#40](https://github.com/timoa/workflow-editor/issues/40) ([2f8669b](https://github.com/timoa/workflow-editor/commit/2f8669bbd4162c506d1952204e65c870fe12dcd6))
+
 ## [1.2.25](https://github.com/timoa/workflow-editor/compare/v1.2.24...v1.2.25) (2026-02-18)
 
 
