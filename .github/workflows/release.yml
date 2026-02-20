@@ -141,9 +141,7 @@ jobs:
       checks: read
       deployments: read
       discussions: read
-      id-token: read
       issues: read
-      models: read
       packages: read
       pages: read
       pull-requests: read
