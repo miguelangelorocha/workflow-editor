@@ -28,6 +28,7 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 - **Multiple workflow tabs**: Opening another workflow (e.g. from the Explorer or "Open Workflow File") opens in a new editor tab instead of replacing the current one, so unsaved changes are not lost. Re-opening the same file reveals its existing tab.
 - **Simplified navbar**: Toolbar keeps Save, View source, Clear/Load sample, Add Trigger/Job, and workflow config; Open file, Paste YAML, and theme buttons were removed for a cleaner UX.
 - **Validation**: Parse errors and lint errors shown in a banner when opening or editing workflows.
+- **Property-based fuzz testing**: Core parsing and serialization logic is tested with [fast-check](https://fast-check.dev/) to detect crashes or regressions on arbitrary and malformed inputs.
 
 ## Installation
 
@@ -127,6 +128,8 @@ The `.vsix` file will be created in the project root.
 pnpm test
 pnpm lint
 ```
+
+The test suite includes **property-based fuzz tests** (`src/lib/workflow.fuzz.test.ts`) powered by [fast-check](https://fast-check.dev/). These generate hundreds of random inputs to verify that `parseWorkflow` and `serializeWorkflow` never throw and satisfy key invariants (safety, round-trip stability). This also satisfies the [OpenSSF Scorecard](https://securityscorecards.dev/) fuzzing criterion for TypeScript projects.
 
 ## CI (Pull request checks)
 
