@@ -23,6 +23,13 @@ module.exports = {
         message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
       },
     ],
-    '@semantic-release/github',
+    [
+      '@semantic-release/github',
+      {
+        // Disable success comment to avoid "Could not resolve to an issue or pull request"
+        // when releasing from push to main (no PR to comment on).
+        successComment: false,
+      },
+    ],
   ],
 };
