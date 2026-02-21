@@ -1,3 +1,11 @@
+## [1.2.30](https://github.com/timoa/workflow-editor/compare/v1.2.29...v1.2.30) (2026-02-21)
+
+
+### Bug Fixes
+
+* **editor:** improve the Webview focus update ([bbb77c6](https://github.com/timoa/workflow-editor/commit/bbb77c658710600b40c1f436dcb3b8996280523e))
+* **webview:** sync the webview when editing files outside the visual editor [#35](https://github.com/timoa/workflow-editor/issues/35) ([d44e129](https://github.com/timoa/workflow-editor/commit/d44e129eec1f5f36951a0d342b31dd0a43ee9efd))
+
 ## [1.2.29](https://github.com/timoa/workflow-editor/compare/v1.2.28...v1.2.29) (2026-02-21)
 
 
