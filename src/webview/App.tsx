@@ -58,7 +58,18 @@ function AppInner() {
   const [workflow, setWorkflow] = useState<Workflow | null>(null)
   const [originalYaml, setOriginalYaml] = useState<string | null>(null)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
+  const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
+  const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
+  const [parseErrors, setParseErrors] = useState<string[]>([])
+  const [lintErrors, setLintErrors] = useState<LintError[]>([])
+  const [showSourceDialog, setShowSourceDialog] = useState(false)
+  const [isEditingWorkflowName, setIsEditingWorkflowName] = useState(false)
+  const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
+  const [deleteJobMessage, setDeleteJobMessage] = useState<string>('')
+  const [currentFilename, setCurrentFilename] = useState<string>('workflow.yml')
   const undoStackRef = useRef<Workflow[]>([])
+  const workflowNameInputRef = useRef<HTMLInputElement>(null)
+  const isUpdatingWorkflowRef = useRef(false)
 
   // Listen for VSCode theme changes and get icon URI
   useEffect(() => {
@@ -142,18 +153,6 @@ function AppInner() {
       isUpdatingWorkflowRef.current = false
     }, 100)
   }, [])
-
-  const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
-  const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
-  const [parseErrors, setParseErrors] = useState<string[]>([])
-  const [lintErrors, setLintErrors] = useState<LintError[]>([])
-  const [showSourceDialog, setShowSourceDialog] = useState(false)
-  const [isEditingWorkflowName, setIsEditingWorkflowName] = useState(false)
-  const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
-  const [deleteJobMessage, setDeleteJobMessage] = useState<string>('')
-  const [currentFilename, setCurrentFilename] = useState<string>('workflow.yml')
-  const workflowNameInputRef = useRef<HTMLInputElement>(null)
-  const isUpdatingWorkflowRef = useRef(false)
 
   // Compute nodes/edges from workflow on every render so trigger node always reflects current config (branches, tags, etc.)
   const w = workflow ?? { name: '', on: {}, jobs: {} }

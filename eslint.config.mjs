@@ -19,6 +19,11 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // New rules added in react-hooks v7 that are too aggressive for established patterns:
+      // - set-state-in-effect: flags legitimate setState-in-effect patterns (e.g. mounted flag, derived lint errors)
+      // - immutability: flags ref.current mutations used as update-suppression flags in event handlers
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/immutability': 'warn',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
