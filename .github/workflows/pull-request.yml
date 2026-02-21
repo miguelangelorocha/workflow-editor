@@ -101,7 +101,7 @@ jobs:
           fetch-depth: 0
 
       - name: React Doctor
-        uses: millionco/react-doctor@main
+        uses: millionco/react-doctor@97b21f18ee4c5b530d683ae6626548081a4aad76
         with:
           diff: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
