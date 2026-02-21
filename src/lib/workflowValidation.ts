@@ -23,13 +23,12 @@ export function validateWorkflowYaml(
       trace
     )
     const errors = result.context.errors.getErrors()
-    return errors.map((e) => {
-      /* v8 ignore next */
-      const path = e.prefix || undefined
-      return { message: e.message, path, severity: 'error' as const }
-    })
+    return errors.map((e) => ({
+      message: e.message,
+      path: e.prefix || undefined,
+      severity: 'error' as const,
+    }))
   } catch (err) {
-    /* v8 ignore next */
     const message = err instanceof Error ? err.message : String(err)
     return [
       {
