@@ -1,3 +1,10 @@
+## [1.2.29](https://github.com/timoa/workflow-editor/compare/v1.2.28...v1.2.29) (2026-02-21)
+
+
+### Bug Fixes
+
+* **cicd:** fix the last release deployment ([f9e1f19](https://github.com/timoa/workflow-editor/commit/f9e1f19ae00fd969e4d8bd55406e43a1119cc4ad))
+
 ## [1.2.28](https://github.com/timoa/workflow-editor/compare/v1.2.27...v1.2.28) (2026-02-21)
 
 
