@@ -78,6 +78,7 @@ export function parseTriggers(on: Workflow['on'] | undefined): ParsedTrigger[] {
   }
 
   // Object: { push: { branches: ['main'] }, pull_request: {...}, schedule: [{ cron: '0 0 * * *' }] }
+  /* v8 ignore next */
   if (typeof on === 'object' && on !== null) {
     const result: ParsedTrigger[] = []
     for (const [event, config] of Object.entries(on)) {

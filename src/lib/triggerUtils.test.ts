@@ -66,6 +66,39 @@ describe('parseTriggers', () => {
     expect(result[1].event).toBe('pull_request')
     expect(result[1].config.types).toEqual(['opened'])
   })
+
+  it('parses array trigger where object item has null config', () => {
+    // e.g. on: [{ push: null }] → config falls back to {}
+    const result = parseTriggers([{ push: null }] as unknown as Parameters<typeof parseTriggers>[0])
+    expect(result).toHaveLength(1)
+    expect(result[0].event).toBe('push')
+    expect(result[0].config).toEqual({})
+  })
+
+  it('skips non-string, non-object items in array trigger', () => {
+    // e.g. on: [push, 42] — the number 42 is neither string nor object → skipped
+    const result = parseTriggers(['push', 42] as unknown as Parameters<typeof parseTriggers>[0])
+    expect(result).toHaveLength(1)
+    expect(result[0].event).toBe('push')
+  })
+
+  it('parses object trigger with null config (bare event like "on: { push: null }")', () => {
+    // In YAML, "on:\n  push:" (no value) produces { push: null }; config falls back to {}
+    const result = parseTriggers({ push: null } as Parameters<typeof parseTriggers>[0])
+    expect(result).toHaveLength(1)
+    expect(result[0].event).toBe('push')
+    expect(result[0].config).toEqual({})
+  })
+
+  it('parses schedule trigger with non-object item (falls back to empty config)', () => {
+    // Defensive: schedule items that are not { cron } objects fall back to empty config
+    const result = parseTriggers({
+      schedule: ['not-an-object'] as unknown as { cron: string }[],
+    })
+    expect(result).toHaveLength(1)
+    expect(result[0].event).toBe('schedule')
+    expect(result[0].config).toEqual({})
+  })
 })
 
 describe('formatTrigger', () => {
@@ -89,6 +122,18 @@ describe('formatTrigger', () => {
         config: { types: ['opened', 'synchronize'] },
       })
     ).toBe('pull_request • types: opened, synchronize')
+  })
+
+  it('formats trigger with tags', () => {
+    expect(
+      formatTrigger({ event: 'push', config: { tags: ['v1.*', 'v2.*'] } })
+    ).toBe('push • tags: v1.*, v2.*')
+  })
+
+  it('formats trigger with paths', () => {
+    expect(
+      formatTrigger({ event: 'push', config: { paths: ['src/**', 'lib/**'] } })
+    ).toBe('push • paths: src/**, lib/**')
   })
 })
 

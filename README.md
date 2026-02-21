@@ -1,8 +1,12 @@
 # Workflow Visual Editor
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/timoa/workflow-editor/badge)](https://securityscorecards.dev/viewer/?uri=github.com/timoa/workflow-editor)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11998/badge)](https://www.bestpractices.dev/projects/11998)
 [![Coverage Status](https://codecov.io/gh/timoa/workflow-editor/branch/main/graph/badge.svg)](https://codecov.io/gh/timoa/workflow-editor)
 [![CI (Tests, Lint & Security)](https://github.com/timoa/workflow-editor/actions/workflows/pull-request.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/pull-request.yml)
+[![Dependency Review](https://github.com/timoa/workflow-editor/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/dependency-review.yml)
+[![CodeQL](https://github.com/timoa/workflow-editor/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/codeql-analysis.yml)
+[![OpenSSF Scorecard](https://github.com/timoa/workflow-editor/actions/workflows/scorecard.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/scorecard.yml)
 [![Release](https://github.com/timoa/workflow-editor/actions/workflows/release.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/release.yml)
 [![Publish](https://github.com/timoa/workflow-editor/actions/workflows/publish.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/publish.yml)
 [![License](https://img.shields.io/github/license/timoa/workflow-editor)](LICENSE)
@@ -28,6 +32,7 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 - **Multiple workflow tabs**: Opening another workflow (e.g. from the Explorer or "Open Workflow File") opens in a new editor tab instead of replacing the current one, so unsaved changes are not lost. Re-opening the same file reveals its existing tab.
 - **Simplified navbar**: Toolbar keeps Save, View source, Clear/Load sample, Add Trigger/Job, and workflow config; Open file, Paste YAML, and theme buttons were removed for a cleaner UX.
 - **Validation**: Parse errors and lint errors shown in a banner when opening or editing workflows.
+- **Property-based fuzz testing**: Core parsing and serialization logic is tested with [fast-check](https://fast-check.dev/) to detect crashes or regressions on arbitrary and malformed inputs.
 
 ## Installation
 
@@ -69,6 +74,46 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 - **View Source**: Click the code icon to view/edit raw YAML
 
 ## Contribute
+
+Contributions are welcome! Please read this section before opening a pull request.
+
+### How to contribute
+
+1. **Fork** the repository by clicking the "Fork" button on GitHub.
+2. **Clone** your fork locally:
+   ```bash
+   git clone https://github.com/<your-username>/workflow-editor.git
+   cd workflow-editor
+   ```
+3. **Create a branch** for your change:
+   ```bash
+   git checkout -b feat/my-feature
+   # or
+   git checkout -b fix/my-bug
+   ```
+4. **Install dependencies** and set up the project (see [Setup](#setup) below).
+5. **Make your changes**, following the [coding standards](#coding-standards).
+6. **Test** your changes locally (see [Test](#test) and [Debug](#debug) below).
+7. **Commit** using [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m "feat: add visual editor for step conditions"
+   git commit -m "fix: resolve crash when workflow has no jobs"
+   ```
+8. **Push** your branch to your fork:
+   ```bash
+   git push origin feat/my-feature
+   ```
+9. **Open a Pull Request** against the `main` branch of this repository. Fill in the PR template that appears automatically.
+
+The CI pipeline will run lint, tests, and a build check on your PR. All checks must pass before the PR can be merged.
+
+### Coding standards
+
+- Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages — this drives automated versioning and changelog generation.
+- Write strict TypeScript; avoid `any`.
+- Keep UI logic in React components (`src/webview/`) and extension logic in the extension host (`src/extension/`). Do not mix them.
+- Add or update tests for any logic change in `src/lib/`.
+- Update `README.md` if your change adds a feature, keyboard shortcut, or modifies existing behaviour.
 
 ### Prerequisites
 
@@ -128,6 +173,8 @@ pnpm test
 pnpm lint
 ```
 
+The test suite includes **property-based fuzz tests** (`src/lib/workflow.fuzz.test.ts`) powered by [fast-check](https://fast-check.dev/). These generate hundreds of random inputs to verify that `parseWorkflow` and `serializeWorkflow` never throw and satisfy key invariants (safety, round-trip stability). This also satisfies the [OpenSSF Scorecard](https://securityscorecards.dev/) fuzzing criterion for TypeScript projects.
+
 ## CI (Pull request checks)
 
 On every pull request to `main` or `master`, GitHub Actions runs:
@@ -137,7 +184,7 @@ On every pull request to `main` or `master`, GitHub Actions runs:
 - **Build**: TypeScript compilation and webpack bundle
 - **Security**: `pnpm audit --audit-level=high` (fails on high or critical vulnerabilities)
 
-Workflow file: [.github/workflows/pull-request.yml](.github/workflows/pull-request.yml). Runs only when relevant files (e.g. `src/`, configs, `package.json`, lockfile) change.
+Workflow file: [.github/workflows/pull-request.yml](.github/workflows/pull-request.yml).
 
 ## Security
 
