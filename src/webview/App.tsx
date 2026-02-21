@@ -471,6 +471,23 @@ function AppInner() {
     return () => window.removeEventListener('vscode-undoRequest', handleUndo)
   }, [handleUndo])
 
+  // Respond to extension request for dirty state (before reload-on-focus)
+  useEffect(() => {
+    const onRequestDirtyState = () => {
+      const currentYaml =
+        workflow != null
+          ? originalYaml != null
+            ? mergeWorkflowIntoYaml(originalYaml, workflow)
+            : serializeWorkflow(workflow)
+          : ''
+      const isDirty =
+        workflow != null && (originalYaml === null || currentYaml !== originalYaml)
+      getVscode()?.postMessage?.({ command: 'dirtyState', isDirty })
+    }
+    window.addEventListener('vscode-requestDirtyState', onRequestDirtyState)
+    return () => window.removeEventListener('vscode-requestDirtyState', onRequestDirtyState)
+  }, [workflow, originalYaml])
+
   const sourceDialogYaml = useMemo(() => {
     if (!workflow) return ''
     return originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
