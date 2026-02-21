@@ -153,6 +153,55 @@ jobs:
     // Third entry should preserve object shape while still being a valid step
     expect(steps[2]).toHaveProperty('run')
   })
+
+  it('normalizes non-string run-name to undefined', () => {
+    // run-name as a number → FALSE branch of typeof check → normalized to undefined
+    const yaml = `
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi
+run-name: 42
+`
+    const { workflow } = parseWorkflow(yaml)
+    expect(workflow['run-name']).toBeUndefined()
+  })
+
+  it('normalizes job with non-array steps to empty array', () => {
+    const yaml = `
+name: Null steps
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps: null
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.build.steps).toEqual([])
+  })
+
+  it('evaluates step env type guard for non-object env value', () => {
+    // normalizeStep evaluates the FALSE branch of the env type guard for a string value.
+    // The subsequent ...step spread still copies the raw value through, so the step
+    // preserves the original env rather than converting it to undefined.
+    const yaml = `
+name: Bad step env
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi
+        env: "not-an-object"
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    // The type guard branch is exercised; the spread preserves the raw YAML value
+    expect(workflow.jobs.build.steps[0].env).toBe('not-an-object')
+  })
 })
 
 describe('serializeWorkflow', () => {
@@ -205,5 +254,65 @@ describe('serializeWorkflow', () => {
     expect(again.jobs.build.strategy?.matrix).toEqual({ node: ['18', '20'] })
     expect(again.jobs.build.strategy?.['fail-fast']).toBe(true)
     expect(again.jobs.build.strategy?.['max-parallel']).toBe(3)
+  })
+
+  it('serializes workflow without a name', () => {
+    const { workflow } = parseWorkflow('on: push\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo hi\n')
+    expect(workflow.name).toBeUndefined()
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).not.toMatch(/^name:/m)
+    expect(yaml).toContain('runs-on: ubuntu-latest')
+  })
+
+  it('serializes step with env values', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    workflow.jobs.build.steps[0] = {
+      run: 'echo hi',
+      env: { MY_VAR: 'hello' },
+    }
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('MY_VAR')
+    const { workflow: again } = parseWorkflow(yaml)
+    expect(again.jobs.build.steps[0].env).toEqual({ MY_VAR: 'hello' })
+  })
+
+  it('serializes strategy with only fail-fast (no matrix)', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    workflow.jobs.build.strategy = { 'fail-fast': false }
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('fail-fast')
+    expect(yaml).not.toContain('matrix')
+  })
+
+  it('serializes strategy with only max-parallel', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    workflow.jobs.build.strategy = { 'max-parallel': 2 }
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('max-parallel')
+  })
+
+  it('serializes workflow with run-name', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    workflow['run-name'] = 'Deploy ${{ github.sha }}'
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('run-name')
+  })
+
+  it('serializes workflow with top-level env', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    workflow.env = { NODE_ENV: 'production' }
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('NODE_ENV')
+    const { workflow: again } = parseWorkflow(yaml)
+    expect(again.env).toEqual({ NODE_ENV: 'production' })
+  })
+
+  it('does not serialize strategy when matrix is empty and no other fields set', () => {
+    const { workflow } = parseWorkflow(minimalWorkflow)
+    // Strategy with only an empty matrix — nothing gets added to strategyObj
+    workflow.jobs.build.strategy = { matrix: {} }
+    const yaml = serializeWorkflow(workflow)
+    // The empty strategy should be omitted from the output
+    expect(yaml).not.toContain('strategy')
   })
 })

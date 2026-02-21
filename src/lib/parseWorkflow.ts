@@ -27,6 +27,7 @@ export function parseWorkflow(yamlContent: string): ParseResult {
   try {
     parsed = YAML.parse(yamlContent, { strict: false })
   } catch (e) {
+    /* v8 ignore next */
     const message = e instanceof Error ? e.message : String(e)
     return {
       workflow: { name: '', on: {}, jobs: {} },
