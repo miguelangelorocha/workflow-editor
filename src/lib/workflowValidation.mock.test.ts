@@ -41,7 +41,6 @@ describe('validateWorkflowYaml (mocked parser)', () => {
 
   it('returns a validation error when the parser throws a non-Error value', () => {
     vi.mocked(mockedParseWorkflow).mockImplementationOnce(() => {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw 'raw string error'
     })
     const errors = validateWorkflowYaml('any yaml')

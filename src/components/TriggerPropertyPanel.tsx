@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Workflow } from '@/types/workflow'
 import type { ParsedTrigger, TriggerConfig } from '@/lib/triggerUtils'
 import { parseTriggers, triggersToOn, triggerSupportsTypes } from '@/lib/triggerUtils'
@@ -51,8 +51,6 @@ export function TriggerPropertyPanel({
   onClose,
 }: TriggerPropertyPanelProps) {
   const [triggers, setTriggers] = useState<ParsedTrigger[]>(() => parseTriggers(workflow.on))
-  const workflowRef = useRef(workflow)
-  workflowRef.current = workflow
 
   // Keep panel in sync when workflow is updated from elsewhere (e.g. source code, paste)
   useEffect(() => {
@@ -63,9 +61,9 @@ export function TriggerPropertyPanel({
     (newTriggers: ParsedTrigger[]) => {
       setTriggers(newTriggers)
       const newOn = triggersToOn(newTriggers)
-      onWorkflowChange({ ...workflowRef.current, on: newOn })
+      onWorkflowChange({ ...workflow, on: newOn })
     },
-    [onWorkflowChange]
+    [onWorkflowChange, workflow]
   )
 
   const addTrigger = useCallback(() => {
