@@ -471,16 +471,17 @@ function AppInner() {
     return () => window.removeEventListener('vscode-undoRequest', handleUndo)
   }, [handleUndo])
 
+  const sourceDialogYaml = useMemo(() => {
+    if (!workflow) return ''
+    return originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
+  }, [workflow, originalYaml])
+
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 pr-4 box-border max-w-full overflow-x-hidden">
       {showSourceDialog && workflow && (
         <SourceCodeDialog
-          key={
-            originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
-          }
-          initialYaml={
-            originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
-          }
+          key={sourceDialogYaml}
+          initialYaml={sourceDialogYaml}
           filename={currentFilename}
           onClose={() => setShowSourceDialog(false)}
           onSave={(w, errors, savedYaml) => {

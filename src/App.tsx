@@ -444,6 +444,11 @@ function AppInner() {
     []
   )
 
+  const sourceDialogYaml = useMemo(() => {
+    if (!workflow) return ''
+    return serializeWorkflow(workflow)
+  }, [workflow])
+
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900">
       <input
@@ -462,8 +467,8 @@ function AppInner() {
       )}
       {showSourceDialog && workflow && (
         <SourceCodeDialog
-          key={serializeWorkflow(workflow)}
-          initialYaml={serializeWorkflow(workflow)}
+          key={sourceDialogYaml}
+          initialYaml={sourceDialogYaml}
           onClose={() => setShowSourceDialog(false)}
           onSave={(w, errors) => {
             setIsEditingWorkflowName(false)
