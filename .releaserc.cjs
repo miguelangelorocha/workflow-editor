@@ -1,5 +1,3 @@
-const { execSync } = require('child_process');
-
 /** @type {import('semantic-release').GlobalConfig} */
 module.exports = {
   branches: ['main', 'master'],
@@ -18,19 +16,7 @@ module.exports = {
         npmPublish: false,
       },
     ],
-    [
-      function buildVsix() {
-        return {
-          async prepare(_pluginConfig, context) {
-            const cwd = context.cwd || process.cwd();
-            execSync('pnpm run compile', { stdio: 'inherit', cwd });
-            execSync('pnpm run webpack', { stdio: 'inherit', cwd });
-            execSync('pnpm run package', { stdio: 'inherit', cwd });
-          },
-        };
-      },
-      {},
-    ],
+    ['./.github/scripts/semantic-release-build-vsix.js', {}],
     [
       '@semantic-release/git',
       {
