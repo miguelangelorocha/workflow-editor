@@ -1,6 +1,7 @@
 # Workflow Visual Editor
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/timoa/workflow-editor/badge)](https://securityscorecards.dev/viewer/?uri=github.com/timoa/workflow-editor)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11998/badge)](https://www.bestpractices.dev/projects/11998)
 [![Coverage Status](https://codecov.io/gh/timoa/workflow-editor/branch/main/graph/badge.svg)](https://codecov.io/gh/timoa/workflow-editor)
 [![CI (Tests, Lint & Security)](https://github.com/timoa/workflow-editor/actions/workflows/pull-request.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/pull-request.yml)
 [![Release](https://github.com/timoa/workflow-editor/actions/workflows/release.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/release.yml)
