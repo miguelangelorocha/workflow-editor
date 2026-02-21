@@ -16,7 +16,7 @@ module.exports = {
         npmPublish: false,
       },
     ],
-    ['./.github/scripts/semantic-release-build-vsix.js', {}],
+    './.github/scripts/semantic-release-build-vsix.js',
     [
       '@semantic-release/git',
       {
