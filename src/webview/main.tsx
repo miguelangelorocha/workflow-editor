@@ -28,6 +28,9 @@ window.addEventListener('message', (event) => {
     case 'undoRequest':
       window.dispatchEvent(new CustomEvent('vscode-undoRequest'))
       break
+    case 'requestDirtyState':
+      window.dispatchEvent(new CustomEvent('vscode-requestDirtyState'))
+      break
   }
 })
 

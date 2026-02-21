@@ -95,14 +95,14 @@ export class WorkflowEditorProvider {
       }
       vscode.commands.executeCommand('setContext', 'workflowEditorFocus', this._panel.active);
 
-      // When panel becomes visible, reload current file so webview shows latest content (e.g. after editing YAML in another tab)
+      // When panel becomes visible, reload current file only if it changed and (if webview is dirty) user confirms
       if (this._panel.visible && this._currentFileUri && this._isWebviewReady) {
         if (this._reloadOnFocusTimeout) {
           clearTimeout(this._reloadOnFocusTimeout);
         }
         this._reloadOnFocusTimeout = setTimeout(() => {
           this._reloadOnFocusTimeout = undefined;
-          this.loadFile(this._currentFileUri!);
+          this._reloadIfChangedOnFocus();
         }, 150);
       }
     };
@@ -134,6 +134,10 @@ export class WorkflowEditorProvider {
               await this.loadFile(uri);
             }
             return;
+          case 'dirtyState':
+            // Response to requestDirtyState: reload only if user confirms when dirty
+            this._handleDirtyStateResponse(message.isDirty === true);
+            return;
         }
       },
       null,
@@ -151,6 +155,10 @@ export class WorkflowEditorProvider {
   /** When set, Save writes directly to this file instead of showing Save As dialog. */
   private _currentFileUri: vscode.Uri | undefined;
   private _reloadOnFocusTimeout: ReturnType<typeof setTimeout> | undefined;
+  /** Last content sent to webview (to avoid reload when file unchanged). */
+  private _lastLoadedContent: string | undefined;
+  /** Last known file mtime (to detect external changes). */
+  private _lastLoadedMtime: number | undefined;
 
   public static getInstance(): WorkflowEditorProvider | undefined {
     return WorkflowEditorProvider._activeInstance;
@@ -176,6 +184,14 @@ export class WorkflowEditorProvider {
       const content = document.getText();
       const filename = path.basename(uri.fsPath);
 
+      this._lastLoadedContent = content;
+      try {
+        const stat = await vscode.workspace.fs.stat(uri);
+        this._lastLoadedMtime = stat.mtime;
+      } catch {
+        this._lastLoadedMtime = undefined;
+      }
+
       // If webview is ready, send immediately; otherwise store as pending
       if (this._isWebviewReady) {
         this._panel.webview.postMessage({
@@ -190,6 +206,49 @@ export class WorkflowEditorProvider {
     } catch (error) {
       vscode.window.showErrorMessage(`Failed to load file: ${error}`);
     }
+  }
+
+  /**
+   * Called when panel becomes visible: only reload if file actually changed;
+   * if webview has unsaved changes, prompt before discarding.
+   */
+  private async _reloadIfChangedOnFocus(): Promise<void> {
+    const uri = this._currentFileUri;
+    if (!uri) return;
+    try {
+      const document = await vscode.workspace.openTextDocument(uri);
+      const currentContent = document.getText();
+
+      const contentUnchanged = this._lastLoadedContent !== undefined && currentContent === this._lastLoadedContent;
+      let mtimeUnchanged = true;
+      try {
+        const stat = await vscode.workspace.fs.stat(uri);
+        mtimeUnchanged = this._lastLoadedMtime !== undefined && stat.mtime === this._lastLoadedMtime;
+      } catch {
+        // If stat fails, rely on content check only
+      }
+      if (contentUnchanged && mtimeUnchanged) {
+        return;
+      }
+
+      this._panel.webview.postMessage({ command: 'requestDirtyState' });
+    } catch (error) {
+      vscode.window.showErrorMessage(`Failed to check file: ${error}`);
+    }
+  }
+
+  private async _handleDirtyStateResponse(isDirty: boolean): Promise<void> {
+    const uri = this._currentFileUri;
+    if (!uri) return;
+    if (isDirty) {
+      const choice = await vscode.window.showWarningMessage(
+        'File was modified elsewhere. Discard your unsaved changes and reload?',
+        'Discard',
+        'Cancel'
+      );
+      if (choice !== 'Discard') return;
+    }
+    await this.loadFile(uri);
   }
 
   private async _handleOpenFile() {
