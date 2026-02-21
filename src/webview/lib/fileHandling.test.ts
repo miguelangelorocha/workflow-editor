@@ -105,7 +105,7 @@ describe('VSCode integration helpers', () => {
       g.window = {}
     }
     originalVscode = g.window.vscode
-    console.error = originalConsoleError
+    originalConsoleError = console.error
   })
 
   afterEach(() => {
