@@ -19,7 +19,7 @@ import { TriggerPropertyPanel } from './components/TriggerPropertyPanel'
 import { WorkflowPropertyPanel } from './components/WorkflowPropertyPanel'
 import { SourceCodeDialog } from './components/SourceCodeDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
-import { openWorkflowFromYaml, saveWorkflowToFile, getVscode } from './lib/fileHandling'
+import { openWorkflowFromYaml, saveWorkflowToFile, getVscode, type OpenResult } from './lib/fileHandling'
 import { serializeWorkflow, mergeWorkflowIntoYaml } from './lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from './lib/triggerUtils'
 import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
@@ -105,7 +105,8 @@ function AppInner() {
   useEffect(() => {
     const handleLoadFile = (event: CustomEvent<{ content: string; filename: string }>) => {
       const { content, filename } = event.detail
-      const { workflow: w, errors } = openWorkflowFromYaml(content)
+      const openResult: OpenResult = openWorkflowFromYaml(content)
+      const { workflow: w, errors } = openResult
       undoStackRef.current = []
       setIsEditingWorkflowName(false)
       isUpdatingWorkflowRef.current = true
@@ -478,6 +479,9 @@ function AppInner() {
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 pr-4 box-border max-w-full overflow-x-hidden">
       {showSourceDialog && workflow && (
         <SourceCodeDialog
+          key={
+            originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
+          }
           initialYaml={
             originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
           }
@@ -635,7 +639,7 @@ function AppInner() {
               <strong>Lint errors:</strong>
               <ul className="ml-4 list-disc space-y-0.5">
                 {lintErrors.map((error, idx) => (
-                  <li key={idx}>
+                  <li key={`${error.path ?? ''}-${error.message}-${idx}`}>
                     <span className={error.severity === 'error' ? 'font-medium' : ''}>
                       {error.path && <code className="text-xs">{error.path}:</code>} {error.message}
                     </span>
@@ -693,6 +697,7 @@ function AppInner() {
         )}
         {selectedTrigger && workflow && !showWorkflowProperties && (
           <TriggerPropertyPanel
+            key={JSON.stringify(workflow.on ?? {})}
             workflow={workflow}
             onWorkflowChange={(w) => {
               pushUndoState(workflow)

@@ -729,7 +729,7 @@ export function JobPropertyPanel({
           </div>
           <ul className="mt-2 space-y-3">
             {(job.steps ?? []).map((step, index) => (
-              <li key={index} className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-2">
+              <li key={`step-${step.name ?? 'unnamed'}-${index}`} className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Step {index + 1}</span>
                   <button

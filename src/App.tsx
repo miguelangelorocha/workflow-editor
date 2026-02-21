@@ -21,7 +21,7 @@ import { WorkflowPropertyPanel } from '@/components/WorkflowPropertyPanel'
 import { PasteYamlDialog } from '@/components/PasteYamlDialog'
 import { SourceCodeDialog } from '@/components/SourceCodeDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-import { openWorkflowFromYaml, saveWorkflowToFile } from '@/lib/fileHandling'
+import { openWorkflowFromYaml, saveWorkflowToFile, type OpenResult } from '@/lib/fileHandling'
 import { serializeWorkflow } from '@/lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from '@/lib/triggerUtils'
 import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
@@ -252,7 +252,8 @@ function AppInner() {
   }, [selectedJobId])
 
   const handlePasteLoad = useCallback((yaml: string) => {
-    const { workflow: w, errors } = openWorkflowFromYaml(yaml)
+    const openResult: OpenResult = openWorkflowFromYaml(yaml)
+    const { workflow: w, errors } = openResult
     setIsEditingWorkflowName(false)
     isUpdatingWorkflowRef.current = true
     setWorkflow(w)
@@ -465,6 +466,7 @@ function AppInner() {
       )}
       {showSourceDialog && workflow && (
         <SourceCodeDialog
+          key={serializeWorkflow(workflow)}
           initialYaml={serializeWorkflow(workflow)}
           onClose={() => setShowSourceDialog(false)}
           onSave={(w, errors) => {
@@ -643,7 +645,7 @@ function AppInner() {
               <strong>Lint errors:</strong>
               <ul className="ml-4 list-disc space-y-0.5">
                 {lintErrors.map((error, idx) => (
-                  <li key={idx}>
+                  <li key={`${error.path ?? ''}-${error.message}-${idx}`}>
                     <span className={error.severity === 'error' ? 'font-medium' : ''}>
                       {error.path && <code className="text-xs">{error.path}:</code>} {error.message}
                     </span>
@@ -700,6 +702,7 @@ function AppInner() {
         )}
         {selectedTrigger && workflow && !showWorkflowProperties && (
           <TriggerPropertyPanel
+            key={JSON.stringify(workflow.on ?? {})}
             workflow={workflow}
             onWorkflowChange={(w) => {
               isUpdatingWorkflowRef.current = true
