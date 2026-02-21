@@ -1,3 +1,5 @@
+const { execSync } = require('child_process');
+
 /** @type {import('semantic-release').GlobalConfig} */
 module.exports = {
   branches: ['main', 'master'],
@@ -17,6 +19,19 @@ module.exports = {
       },
     ],
     [
+      function buildVsix() {
+        return {
+          async prepare(_pluginConfig, context) {
+            const cwd = context.cwd || process.cwd();
+            execSync('pnpm run compile', { stdio: 'inherit', cwd });
+            execSync('pnpm run webpack', { stdio: 'inherit', cwd });
+            execSync('pnpm run package', { stdio: 'inherit', cwd });
+          },
+        };
+      },
+      {},
+    ],
+    [
       '@semantic-release/git',
       {
         assets: ['package.json', 'CHANGELOG.md'],
@@ -26,9 +41,7 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        // Disable success comment to avoid "Could not resolve to an issue or pull request"
-        // when releasing from push to main (no PR to comment on).
-        successComment: false,
+        assets: ['*.vsix'],
       },
     ],
   ],
