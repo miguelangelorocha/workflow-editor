@@ -231,6 +231,10 @@ function AppInner() {
     setDeleteJobMessage('')
   }, [])
 
+  // Derive effective selection so we don't show a deleted job as selected (avoids setState in effect)
+  const effectiveSelectedJobId =
+    selectedJobId && workflow?.jobs[selectedJobId] ? selectedJobId : null
+
   const nodes = useMemo(() => {
     return baseNodes.map((node) => {
       const selected =
@@ -238,21 +242,13 @@ function AppInner() {
           ? false
           : node.id.startsWith('__trigger__')
             ? selectedTrigger
-            : selectedJobId === node.id
+            : effectiveSelectedJobId === node.id
       if (node.type === 'job' && node.data && 'jobId' in node.data) {
         return { ...node, selected }
       }
       return { ...node, selected }
     })
-  }, [baseNodes, selectedJobId, selectedTrigger])
-
-  // Preserve selection when workflow updates
-  useEffect(() => {
-    if (selectedJobId && workflow && !workflow.jobs[selectedJobId]) {
-      // Job was deleted, clear selection
-      setSelectedJobId(null)
-    }
-  }, [workflow, selectedJobId])
+  }, [baseNodes, effectiveSelectedJobId, selectedTrigger])
 
   const onSelectionChange: OnSelectionChangeFunc = useCallback(({ nodes: selectedNodes }) => {
     // Ignore selection changes during workflow updates
@@ -710,10 +706,10 @@ function AppInner() {
             onClose={() => setSelectedTrigger(false)}
           />
         )}
-        {selectedJobId && workflow && !selectedTrigger && !showWorkflowProperties && (
+        {effectiveSelectedJobId && workflow && !selectedTrigger && !showWorkflowProperties && (
           <JobPropertyPanel
             workflow={workflow}
-            jobId={selectedJobId}
+            jobId={effectiveSelectedJobId}
             onWorkflowChange={(w) => {
               pushUndoState(workflow)
               isUpdatingWorkflowRef.current = true

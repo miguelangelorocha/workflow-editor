@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { Workflow } from '@/types/workflow'
 import type { ParsedTrigger, TriggerConfig } from '@/lib/triggerUtils'
 import { parseTriggers, triggersToOn, triggerSupportsTypes } from '@/lib/triggerUtils'
