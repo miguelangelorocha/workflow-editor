@@ -90,12 +90,6 @@ export function SourceCodeDialog({
   }, [])
 
   useEffect(() => {
-    setSaveError(null)
-    setLintErrors([])
-    setSyntaxCheckValid(null)
-  }, [initialYaml])
-
-  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
@@ -209,7 +203,7 @@ export function SourceCodeDialog({
                 </div>
                 <ul className="ml-4 list-disc space-y-0.5 text-xs">
                   {lintErrors.map((error, idx) => (
-                    <li key={idx}>
+                    <li key={`${error.path ?? ''}-${error.message}-${idx}`}>
                       <span className={error.severity === 'error' ? 'font-medium' : ''}>
                         {error.path && <code className="text-xs">{error.path}:</code>} {error.message}
                       </span>

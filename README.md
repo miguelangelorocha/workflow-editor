@@ -30,9 +30,8 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 - **Workflow validation**: Automatic validation using the official [@actions/workflow-parser](https://github.com/actions/languageservices) (same as the GitHub Actions VS Code extension). Reports schema and syntax errors with detailed messages.
 - **VSCode Integration**: Open workflow files via context menu or command palette; save directly to workspace. Theme automatically follows your IDE theme (no in-editor theme toggle).
 - **Multiple workflow tabs**: Opening another workflow (e.g. from the Explorer or "Open Workflow File") opens in a new editor tab instead of replacing the current one, so unsaved changes are not lost. Re-opening the same file reveals its existing tab.
-- **Simplified navbar**: Toolbar keeps Save, View source, Clear/Load sample, Add Trigger/Job, and workflow config; Open file, Paste YAML, and theme buttons were removed for a cleaner UX.
+- **Simplified navbar**: Toolbar keeps View source, Clear/Load sample, Add Trigger/Job, and workflow config. Save, Open file, Paste YAML, and theme buttons were removed for a cleaner UX; use the command palette or context menu to open workflows, and Ctrl/Cmd+S to save.
 - **Validation**: Parse errors and lint errors shown in a banner when opening or editing workflows.
-- **Property-based fuzz testing**: Core parsing and serialization logic is tested with [fast-check](https://fast-check.dev/) to detect crashes or regressions on arbitrary and malformed inputs.
 
 ## Installation
 
@@ -70,12 +69,32 @@ A VSCode extension providing a visual editor for GitHub Actions workflow files. 
 ### File Operations
 
 - **Open**: Use the Command Palette ("Workflow Editor: Open Workflow File") or right-click a `.yml`/`.yaml` file in the Explorer and choose "Open with Workflow Editor". Each workflow opens in its own tab; opening the same file again focuses that tab.
-- **Save**: Click the save icon in the toolbar or press Ctrl/Cmd+S when the workflow editor tab is focused (Save/Undo apply to the active tab).
+- **Save**: Press Ctrl/Cmd+S when the workflow editor tab is focused (Save and Undo apply to the active tab).
 - **View Source**: Click the code icon to view/edit raw YAML
 
-## Contribute
+## Security & quality
 
-Contributions are welcome! Please read this section before opening a pull request.
+This project is built and maintained with security and quality in mind:
+
+- **OpenSSF Scorecard & Best Practices**: The repository is scored by [OpenSSF Scorecard](https://securityscorecards.dev/) and follows [OpenSSF Best Practices](https://www.bestpractices.dev/) (see badges above).
+- **Hardened CI**: All GitHub Actions use [step-security/harden-runner](https://github.com/step-security/harden-runner) with **egress blocking** — only explicitly allowed endpoints can be reached. This limits supply chain attacks (e.g. compromised dependencies phoning home or pulling malicious payloads) during build and test.
+- **Dependency checks**: [Dependency Review](https://github.com/timoa/workflow-editor/actions/workflows/dependency-review.yml) runs on every PR; CI runs `pnpm audit --audit-level=high`. Known exceptions are documented in [osv-scanner.toml](osv-scanner.toml).
+- **CodeQL**: [CodeQL analysis](https://github.com/timoa/workflow-editor/actions/workflows/codeql-analysis.yml) runs on push/PR and on a schedule for JavaScript/TypeScript.
+- **Code coverage**: Tests run with coverage and results are uploaded to [Codecov](https://codecov.io/gh/timoa/workflow-editor) (see badge above).
+- **Fuzzing**: Property-based tests with [fast-check](https://fast-check.dev/) for parse/serialize logic (satisfies the OpenSSF Scorecard fuzzing criterion).
+- **React Doctor**: [React Doctor](https://www.react.doctor) scans the React webview code for correctness, performance, and accessibility. It runs on every pull request (diff-only on changed files) and posts a comment with the report; you can also run it locally (see [React Doctor (local)](#react-doctor-local)).
+- **AI code review**: Pull requests receive AI-assisted review via [CodeRabbit](https://coderabbit.ai) for consistency and best practices.
+
+## Compatibility
+
+- **VSCode**: Full support (minimum version 1.80.0)
+- **Cursor**: Compatible (VSCode-compatible extension)
+- **Windsurf**: Compatible (VSCode-compatible extension)
+- **Other VSCode-based IDEs**: Should work with any IDE that supports VSCode extensions
+
+## Contributing
+
+Contributions are welcome! Please read this section before opening a pull request. Keyboard shortcuts are listed under [Usage](#usage) above.
 
 ### How to contribute
 
@@ -175,22 +194,37 @@ pnpm lint
 
 The test suite includes **property-based fuzz tests** (`src/lib/workflow.fuzz.test.ts`) powered by [fast-check](https://fast-check.dev/). These generate hundreds of random inputs to verify that `parseWorkflow` and `serializeWorkflow` never throw and satisfy key invariants (safety, round-trip stability). This also satisfies the [OpenSSF Scorecard](https://securityscorecards.dev/) fuzzing criterion for TypeScript projects.
 
-## CI (Pull request checks)
+### CI (Pull request checks)
 
 On every pull request to `main` or `master`, GitHub Actions runs:
 
 - **Lint**: ESLint (TypeScript + React hooks and refresh)
 - **Test**: Vitest
 - **Build**: TypeScript compilation and webpack bundle
+- **React Doctor**: Scans changed React files for issues (state/reset, keys, a11y, performance). Posts a comment on the PR with the score and diagnostics.
 - **Security**: `pnpm audit --audit-level=high` (fails on high or critical vulnerabilities)
 
 Workflow file: [.github/workflows/pull-request.yml](.github/workflows/pull-request.yml).
 
-## Security
+### React Doctor (local)
 
-### GitHub Actions Security with Harden Runner
+Run React Doctor locally to check the React codebase before pushing:
 
-All GitHub Actions workflows are secured using [step-security/harden-runner](https://github.com/step-security/harden-runner), a security agent that monitors and protects CI/CD pipelines.
+```bash
+npx -y react-doctor@latest .
+```
+
+To scan only files changed vs `main` (same as in CI):
+
+```bash
+npx -y react-doctor@latest . --diff main
+```
+
+Use `--verbose` for per-file details. The tool outputs a 0–100 score and actionable diagnostics; see [react.doctor](https://www.react.doctor) for more.
+
+### Security (Harden Runner)
+
+All GitHub Actions workflows use [step-security/harden-runner](https://github.com/step-security/harden-runner) with **egress blocking** to mitigate supply chain attacks (e.g. compromised dependencies exfiltrating data or fetching malicious code during CI). Only explicitly allowed endpoints can be reached.
 
 **What it does:**
 - Monitors network egress to detect unauthorized outbound calls
@@ -199,21 +233,18 @@ All GitHub Actions workflows are secured using [step-security/harden-runner](htt
 - Auto-detects GitHub Actions cache endpoints
 
 **Current Configuration:**
-All workflows run in **audit mode**, which monitors and logs all activity without blocking. This allows us to:
-1. Review which network endpoints are accessed during workflow runs
-2. Identify any suspicious or unexpected network activity
-3. Build a policy of allowed endpoints for future enforcement
+Workflows run with egress **block** policy and an allowlist of endpoints. This ensures that even if a dependency is compromised, it cannot phone home or pull payloads from arbitrary URLs.
 
-**Workflows Protected:**
+**Workflows protected:**
 - [.github/workflows/pull-request.yml](.github/workflows/pull-request.yml) - CI checks
 - [.github/workflows/release.yml](.github/workflows/release.yml) - Release automation
 - [.github/workflows/publish.yml](.github/workflows/publish.yml) - Marketplace publishing
 
 Audit results and insights are available at the [Step Security dashboard](https://app.stepsecurity.io/).
 
-## Release & Publishing
+### Release & Publishing
 
-### Automated Release
+#### Automated Release
 
 Releases are automated with [Semantic Release](https://semantic-release.gitbook.io/). On every **push to `main` or `master`**:
 
@@ -229,7 +260,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) so versions and
 
 Workflow: [.github/workflows/release.yml](.github/workflows/release.yml). Config: [.releaserc.cjs](.releaserc.cjs).
 
-### Publishing to Marketplace
+#### Publishing to Marketplace
 
 When a GitHub release is created by Semantic Release, the [publish workflow](.github/workflows/publish.yml) automatically:
 
@@ -249,13 +280,7 @@ To get a token:
 4. Create a token with "Marketplace (Manage)" scope
 5. Add it as `VSCE_PAT` secret in GitHub repository settings
 
-## Keyboard shortcuts
-
-- **Ctrl/Cmd+Z**: Undo last change (when Workflow Editor tab is focused)
-- **Ctrl/Cmd+S**: Save workflow (when Workflow Editor tab is focused)
-- **Escape**: Close property panel, source dialog, or run script dialog
-
-## Stack
+### Stack
 
 - **Extension Host**: Node.js + VSCode Extension API
 - **Webview UI**: React 18 + TypeScript
@@ -264,10 +289,3 @@ To get a token:
 - **YAML**: [yaml](https://www.npmjs.com/package/yaml) for parse/serialize
 - **Styling**: Tailwind CSS
 - **Packaging**: [@vscode/vsce](https://www.npmjs.com/package/@vscode/vsce)
-
-## Compatibility
-
-- **VSCode**: Full support (minimum version 1.80.0)
-- **Cursor**: Compatible (VSCode-compatible extension)
-- **Windsurf**: Compatible (VSCode-compatible extension)
-- **Other VSCode-based IDEs**: Should work with any IDE that supports VSCode extensions

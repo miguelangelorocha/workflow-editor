@@ -87,3 +87,21 @@ jobs:
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
         continue-on-error: false
+
+  react-doctor:
+    name: React Doctor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: React Doctor
+        uses: millionco/react-doctor@97b21f18ee4c5b530d683ae6626548081a4aad76
+        with:
+          diff: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}

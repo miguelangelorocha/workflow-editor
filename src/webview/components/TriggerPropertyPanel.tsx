@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { Workflow } from '@/types/workflow'
 import type { ParsedTrigger, TriggerConfig } from '@/lib/triggerUtils'
 import { parseTriggers, triggersToOn, triggerSupportsTypes } from '@/lib/triggerUtils'
@@ -51,11 +51,6 @@ export function TriggerPropertyPanel({
   onClose,
 }: TriggerPropertyPanelProps) {
   const [triggers, setTriggers] = useState<ParsedTrigger[]>(() => parseTriggers(workflow.on))
-
-  // Keep panel in sync when workflow is updated from elsewhere (e.g. source code, paste)
-  useEffect(() => {
-    setTriggers(parseTriggers(workflow.on))
-  }, [workflow.on])
 
   const updateTriggers = useCallback(
     (newTriggers: ParsedTrigger[]) => {
@@ -146,7 +141,7 @@ export function TriggerPropertyPanel({
           ) : (
             <div className="space-y-2">
               {triggers.map((trigger, index) => (
-                <div key={index} className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-2 space-y-2">
+                <div key={`trigger-${trigger.event}-${index}`} className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-2 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Trigger {index + 1}</span>
                     <button

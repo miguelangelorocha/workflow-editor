@@ -23,7 +23,7 @@ function TriggerNodeComponent(props: NodeProps) {
         {d.triggers.length === 0 ? (
           <span className="rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-xs italic text-slate-500 dark:text-slate-400">No triggers</span>
         ) : (
-          d.triggers.map((trigger, idx) => <TriggerBadge key={idx} trigger={trigger} />)
+          d.triggers.map((trigger, idx) => <TriggerBadge key={`${trigger.event}-${idx}`} trigger={trigger} />)
         )}
       </div>
       <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-2 !border-purple-400 dark:!border-purple-600 !bg-white dark:!bg-slate-800" />

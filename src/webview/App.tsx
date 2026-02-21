@@ -19,7 +19,7 @@ import { TriggerPropertyPanel } from './components/TriggerPropertyPanel'
 import { WorkflowPropertyPanel } from './components/WorkflowPropertyPanel'
 import { SourceCodeDialog } from './components/SourceCodeDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
-import { openWorkflowFromYaml, saveWorkflowToFile, getVscode } from './lib/fileHandling'
+import { openWorkflowFromYaml, saveWorkflowToFile, getVscode, type OpenResult } from './lib/fileHandling'
 import { serializeWorkflow, mergeWorkflowIntoYaml } from './lib/serializeWorkflow'
 import { parseTriggers, triggersToOn } from './lib/triggerUtils'
 import { validateWorkflowYaml, type LintError } from '@/lib/workflowValidation'
@@ -105,7 +105,8 @@ function AppInner() {
   useEffect(() => {
     const handleLoadFile = (event: CustomEvent<{ content: string; filename: string }>) => {
       const { content, filename } = event.detail
-      const { workflow: w, errors } = openWorkflowFromYaml(content)
+      const openResult: OpenResult = openWorkflowFromYaml(content)
+      const { workflow: w, errors } = openResult
       undoStackRef.current = []
       setIsEditingWorkflowName(false)
       isUpdatingWorkflowRef.current = true
@@ -230,6 +231,10 @@ function AppInner() {
     setDeleteJobMessage('')
   }, [])
 
+  // Derive effective selection so we don't show a deleted job as selected (avoids setState in effect)
+  const effectiveSelectedJobId =
+    selectedJobId && workflow?.jobs[selectedJobId] ? selectedJobId : null
+
   const nodes = useMemo(() => {
     return baseNodes.map((node) => {
       const selected =
@@ -237,21 +242,13 @@ function AppInner() {
           ? false
           : node.id.startsWith('__trigger__')
             ? selectedTrigger
-            : selectedJobId === node.id
+            : effectiveSelectedJobId === node.id
       if (node.type === 'job' && node.data && 'jobId' in node.data) {
         return { ...node, selected }
       }
       return { ...node, selected }
     })
-  }, [baseNodes, selectedJobId, selectedTrigger])
-
-  // Preserve selection when workflow updates
-  useEffect(() => {
-    if (selectedJobId && workflow && !workflow.jobs[selectedJobId]) {
-      // Job was deleted, clear selection
-      setSelectedJobId(null)
-    }
-  }, [workflow, selectedJobId])
+  }, [baseNodes, effectiveSelectedJobId, selectedTrigger])
 
   const onSelectionChange: OnSelectionChangeFunc = useCallback(({ nodes: selectedNodes }) => {
     // Ignore selection changes during workflow updates
@@ -474,13 +471,17 @@ function AppInner() {
     return () => window.removeEventListener('vscode-undoRequest', handleUndo)
   }, [handleUndo])
 
+  const sourceDialogYaml = useMemo(() => {
+    if (!workflow) return ''
+    return originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
+  }, [workflow, originalYaml])
+
   return (
     <div className="h-full w-full flex flex-col bg-slate-100 dark:bg-slate-900 pr-4 box-border max-w-full overflow-x-hidden">
       {showSourceDialog && workflow && (
         <SourceCodeDialog
-          initialYaml={
-            originalYaml != null ? mergeWorkflowIntoYaml(originalYaml, workflow) : serializeWorkflow(workflow)
-          }
+          key={sourceDialogYaml}
+          initialYaml={sourceDialogYaml}
           filename={currentFilename}
           onClose={() => setShowSourceDialog(false)}
           onSave={(w, errors, savedYaml) => {
@@ -635,7 +636,7 @@ function AppInner() {
               <strong>Lint errors:</strong>
               <ul className="ml-4 list-disc space-y-0.5">
                 {lintErrors.map((error, idx) => (
-                  <li key={idx}>
+                  <li key={`${error.path ?? ''}-${error.message}-${idx}`}>
                     <span className={error.severity === 'error' ? 'font-medium' : ''}>
                       {error.path && <code className="text-xs">{error.path}:</code>} {error.message}
                     </span>
@@ -693,6 +694,7 @@ function AppInner() {
         )}
         {selectedTrigger && workflow && !showWorkflowProperties && (
           <TriggerPropertyPanel
+            key={JSON.stringify(workflow.on ?? {})}
             workflow={workflow}
             onWorkflowChange={(w) => {
               pushUndoState(workflow)
@@ -705,10 +707,10 @@ function AppInner() {
             onClose={() => setSelectedTrigger(false)}
           />
         )}
-        {selectedJobId && workflow && !selectedTrigger && !showWorkflowProperties && (
+        {effectiveSelectedJobId && workflow && !selectedTrigger && !showWorkflowProperties && (
           <JobPropertyPanel
             workflow={workflow}
-            jobId={selectedJobId}
+            jobId={effectiveSelectedJobId}
             onWorkflowChange={(w) => {
               pushUndoState(workflow)
               isUpdatingWorkflowRef.current = true
