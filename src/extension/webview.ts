@@ -94,6 +94,17 @@ export class WorkflowEditorProvider {
         WorkflowEditorProvider._activeInstance = this;
       }
       vscode.commands.executeCommand('setContext', 'workflowEditorFocus', this._panel.active);
+
+      // When panel becomes visible, reload current file so webview shows latest content (e.g. after editing YAML in another tab)
+      if (this._panel.visible && this._currentFileUri && this._isWebviewReady) {
+        if (this._reloadOnFocusTimeout) {
+          clearTimeout(this._reloadOnFocusTimeout);
+        }
+        this._reloadOnFocusTimeout = setTimeout(() => {
+          this._reloadOnFocusTimeout = undefined;
+          this.loadFile(this._currentFileUri!);
+        }, 150);
+      }
     };
     updateFocusContext();
     this._panel.onDidChangeViewState(updateFocusContext, null, this._disposables);
@@ -139,6 +150,7 @@ export class WorkflowEditorProvider {
   private _isWebviewReady: boolean = false;
   /** When set, Save writes directly to this file instead of showing Save As dialog. */
   private _currentFileUri: vscode.Uri | undefined;
+  private _reloadOnFocusTimeout: ReturnType<typeof setTimeout> | undefined;
 
   public static getInstance(): WorkflowEditorProvider | undefined {
     return WorkflowEditorProvider._activeInstance;
@@ -282,6 +294,10 @@ export class WorkflowEditorProvider {
   }
 
   public dispose() {
+    if (this._reloadOnFocusTimeout) {
+      clearTimeout(this._reloadOnFocusTimeout);
+      this._reloadOnFocusTimeout = undefined;
+    }
     WorkflowEditorProvider._instances.delete(this);
     if (WorkflowEditorProvider._activeInstance === this) {
       WorkflowEditorProvider._activeInstance = undefined;
