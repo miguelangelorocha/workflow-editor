@@ -181,7 +181,7 @@ On every pull request to `main` or `master`, GitHub Actions runs:
 - **Build**: TypeScript compilation and webpack bundle
 - **Security**: `pnpm audit --audit-level=high` (fails on high or critical vulnerabilities)
 
-Workflow file: [.github/workflows/pull-request.yml](.github/workflows/pull-request.yml). Runs only when relevant files (e.g. `src/`, configs, `package.json`, lockfile) change.
+Workflow file: [.github/workflows/pull-request.yml](.github/workflows/pull-request.yml).
 
 ## Security
 
