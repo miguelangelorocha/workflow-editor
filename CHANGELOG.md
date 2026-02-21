@@ -1,3 +1,12 @@
+## [1.2.28](https://github.com/timoa/workflow-editor/compare/v1.2.27...v1.2.28) (2026-02-21)
+
+
+### Bug Fixes
+
+* **extension:** fix issues from React Doctor report (scored 91 now) ([b3245ed](https://github.com/timoa/workflow-editor/commit/b3245ed5eefb1767bd24137d7f161e88d6fe16bf))
+* **lint:** apply suggestion from RabbitCode AI ([54d0269](https://github.com/timoa/workflow-editor/commit/54d02698744541972bd79f9a8f69c3d5fa04b404))
+* **lint:** fix the lint issues ([03aa210](https://github.com/timoa/workflow-editor/commit/03aa210f9f4d1678326297f4be1e1488faf6bcc5))
+
 ## [1.2.27](https://github.com/timoa/workflow-editor/compare/v1.2.26...v1.2.27) (2026-02-21)
 
 
