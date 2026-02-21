@@ -109,7 +109,7 @@ The CI pipeline will run lint, tests, and a build check on your PR. All checks m
 - Write strict TypeScript; avoid `any`.
 - Keep UI logic in React components (`src/webview/`) and extension logic in the extension host (`src/extension/`). Do not mix them.
 - Add or update tests for any logic change in `src/lib/`.
-- Update `README.md` if your change adds a feature, keyboard shortcut, or modifies existing behaviour (required by the [documentation rule](.cursor/rules/06-documentation.mdc)).
+- Update `README.md` if your change adds a feature, keyboard shortcut, or modifies existing behaviour.
 
 ### Prerequisites
 
