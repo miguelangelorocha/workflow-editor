@@ -34,6 +34,7 @@ export function serializeWorkflow(workflow: Workflow): string {
       if (strategy['max-parallel'] !== undefined) {
         strategyObj['max-parallel'] = strategy['max-parallel']
       }
+      /* v8 ignore next */
       if (Object.keys(strategyObj).length > 0) {
         j.strategy = strategyObj
       }

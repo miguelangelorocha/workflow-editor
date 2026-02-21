@@ -108,4 +108,71 @@ jobs:
     const triggerNodes = nodes.filter((n) => n.id.startsWith('__trigger__'))
     expect(triggerNodes.length).toBe(2)
   })
+
+  it('creates a single empty trigger node when workflow has no triggers', () => {
+    // on: {} produces zero parsed triggers — should still render one placeholder trigger node
+    const workflow = { on: {}, jobs: { build: { 'runs-on': 'ubuntu-latest', steps: [{ run: 'echo hi' }] } } }
+    const { nodes } = workflowToFlowNodesEdges(workflow as Parameters<typeof workflowToFlowNodesEdges>[0])
+    const triggerNodes = nodes.filter((n) => n.id.startsWith('__trigger__'))
+    expect(triggerNodes.length).toBe(1)
+    expect((triggerNodes[0].data as { triggers: unknown[] }).triggers).toEqual([])
+  })
+
+  it('handles job with array needs', () => {
+    const yaml = `
+name: Array Needs
+on: push
+jobs:
+  one:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo one
+  two:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo two
+  three:
+    needs: [one, two]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo three
+`
+    const { workflow } = parseWorkflow(yaml)
+    const { edges } = workflowToFlowNodesEdges(workflow)
+    expect(edges.some((e) => e.source === 'one' && e.target === 'three')).toBe(true)
+    expect(edges.some((e) => e.source === 'two' && e.target === 'three')).toBe(true)
+  })
+
+  it('handles job with runs-on as array (label-based runners)', () => {
+    const yaml = `
+name: Array Runner
+on: push
+jobs:
+  build:
+    runs-on: [ubuntu-latest, self-hosted]
+    steps:
+      - run: echo hi
+`
+    const { workflow } = parseWorkflow(yaml)
+    const { nodes } = workflowToFlowNodesEdges(workflow)
+    const jobNode = nodes.find((n) => n.type === 'job')
+    expect(jobNode).toBeDefined()
+    expect((jobNode!.data as { runsOn: string }).runsOn).toBe('ubuntu-latest, self-hosted')
+  })
+
+  it('handles circular job dependency without infinite loop', () => {
+    // Circular deps are invalid in GitHub Actions but the layout algorithm
+    // must not hang; it breaks the cycle by placing remaining[0]
+    const workflow = {
+      on: 'push',
+      jobs: {
+        a: { 'runs-on': 'ubuntu-latest', needs: 'b', steps: [{ run: 'echo a' }] },
+        b: { 'runs-on': 'ubuntu-latest', needs: 'a', steps: [{ run: 'echo b' }] },
+      },
+    }
+    const { nodes } = workflowToFlowNodesEdges(workflow as Parameters<typeof workflowToFlowNodesEdges>[0])
+    const jobIds = nodes.filter((n) => n.type === 'job').map((n) => n.id)
+    expect(jobIds).toContain('a')
+    expect(jobIds).toContain('b')
+  })
 })
