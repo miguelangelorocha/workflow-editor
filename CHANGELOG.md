@@ -1,3 +1,12 @@
+## [1.2.31](https://github.com/timoa/workflow-editor/compare/v1.2.30...v1.2.31) (2026-02-22)
+
+
+### Bug Fixes
+
+* **app:** remove unused console.log ([5798651](https://github.com/timoa/workflow-editor/commit/57986510fc7479011dbb9dd54137858aa64530a2))
+* **lint:** fix lint issues [#19](https://github.com/timoa/workflow-editor/issues/19) ([f916a93](https://github.com/timoa/workflow-editor/commit/f916a9342196ef16d3e0431e44df5016839636e6))
+* **workflow:** add support for reusable workflow [#19](https://github.com/timoa/workflow-editor/issues/19) ([ac94c11](https://github.com/timoa/workflow-editor/commit/ac94c112140f764c8252f49cfefe6ba608f505c7))
+
 ## [1.2.30](https://github.com/timoa/workflow-editor/compare/v1.2.29...v1.2.30) (2026-02-21)
 
 
