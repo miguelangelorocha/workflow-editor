@@ -17,29 +17,43 @@ export function serializeWorkflow(workflow: Workflow): string {
 
   const jobs: Record<string, unknown> = {}
   for (const [jobId, job] of Object.entries(workflow.jobs)) {
-    const { steps, strategy, ...rest } = job
-    const j: Record<string, unknown> = {
-      ...rest,
-      'runs-on': job['runs-on'],
-      steps: steps.map((s) => stepToSerializable(s)),
+    if (typeof job.uses === 'string') {
+      // Reusable workflow caller job: only emit keys allowed by GitHub Actions schema
+      const j: Record<string, unknown> = {}
+      if (job.name !== undefined) j.name = job.name
+      if (job.needs !== undefined) j.needs = job.needs
+      if (job.permissions !== undefined) j.permissions = job.permissions
+      if (job.if !== undefined) j.if = job.if
+      j.uses = job.uses
+      if (job.with && Object.keys(job.with).length > 0) j.with = job.with
+      if (job.secrets !== undefined) j.secrets = job.secrets
+      jobs[jobId] = j
+    } else {
+      // Normal job with runs-on and steps
+      const { steps, strategy, ...rest } = job
+      const j: Record<string, unknown> = {
+        ...rest,
+        'runs-on': job['runs-on'],
+        steps: (steps ?? []).map((s) => stepToSerializable(s)),
+      }
+      if (strategy) {
+        const strategyObj: Record<string, unknown> = {}
+        if (strategy.matrix && Object.keys(strategy.matrix).length > 0) {
+          strategyObj.matrix = strategy.matrix
+        }
+        if (strategy['fail-fast'] !== undefined) {
+          strategyObj['fail-fast'] = strategy['fail-fast']
+        }
+        if (strategy['max-parallel'] !== undefined) {
+          strategyObj['max-parallel'] = strategy['max-parallel']
+        }
+        /* v8 ignore next */
+        if (Object.keys(strategyObj).length > 0) {
+          j.strategy = strategyObj
+        }
+      }
+      jobs[jobId] = j
     }
-    if (strategy) {
-      const strategyObj: Record<string, unknown> = {}
-      if (strategy.matrix && Object.keys(strategy.matrix).length > 0) {
-        strategyObj.matrix = strategy.matrix
-      }
-      if (strategy['fail-fast'] !== undefined) {
-        strategyObj['fail-fast'] = strategy['fail-fast']
-      }
-      if (strategy['max-parallel'] !== undefined) {
-        strategyObj['max-parallel'] = strategy['max-parallel']
-      }
-      /* v8 ignore next */
-      if (Object.keys(strategyObj).length > 0) {
-        j.strategy = strategyObj
-      }
-    }
-    jobs[jobId] = j
   }
   obj.jobs = jobs
 

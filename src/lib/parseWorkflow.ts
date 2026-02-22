@@ -84,21 +84,53 @@ export function parseWorkflow(yamlContent: string): ParseResult {
         }
       }
     }
-    workflow.jobs[jobId] = {
-      ...j,
-      name: typeof j.name === 'string' ? j.name : undefined,
-      'runs-on': (typeof j['runs-on'] === 'string' || Array.isArray(j['runs-on'])
-        ? j['runs-on']
-        : 'ubuntu-latest') as string | string[],
-      needs: (j.needs as string | string[] | undefined),
-      permissions: typeof j.permissions === 'object' && j.permissions !== null && !Array.isArray(j.permissions)
-        ? (j.permissions as Record<string, string>)
-        : undefined,
-      env: typeof j.env === 'object' && j.env !== null && !Array.isArray(j.env)
+    const name = typeof j.name === 'string' ? j.name : undefined
+    const needs = j.needs as string | string[] | undefined
+    const permissions = typeof j.permissions === 'object' && j.permissions !== null && !Array.isArray(j.permissions)
+      ? (j.permissions as Record<string, string>)
+      : undefined
+    const jobIf = typeof j.if === 'string' ? j.if : undefined
+
+    if (typeof j.uses === 'string') {
+      // Reusable workflow caller job: must not have runs-on or steps
+      const withInputs = typeof j.with === 'object' && j.with !== null && !Array.isArray(j.with)
+        ? (j.with as Record<string, unknown>)
+        : undefined
+      const secrets = j.secrets === 'inherit'
+        ? ('inherit' as const)
+        : typeof j.secrets === 'object' && j.secrets !== null && !Array.isArray(j.secrets)
+          ? (j.secrets as Record<string, string>)
+          : undefined
+      workflow.jobs[jobId] = {
+        ...j,
+        name,
+        uses: j.uses,
+        with: withInputs,
+        secrets,
+        needs,
+        permissions,
+        if: jobIf,
+        // Explicitly exclude runs-on and steps so they are not present
+        'runs-on': undefined,
+        steps: undefined,
+      }
+    } else {
+      // Normal job with runs-on and steps
+      const env = typeof j.env === 'object' && j.env !== null && !Array.isArray(j.env)
         ? (j.env as Record<string, string>)
-        : undefined,
-      strategy,
-      steps: steps.map((s, i) => normalizeStep(s, jobId, i)),
+        : undefined
+      workflow.jobs[jobId] = {
+        ...j,
+        name,
+        'runs-on': (typeof j['runs-on'] === 'string' || Array.isArray(j['runs-on'])
+          ? j['runs-on']
+          : 'ubuntu-latest') as string | string[],
+        needs,
+        permissions,
+        env,
+        strategy,
+        steps: steps.map((s, i) => normalizeStep(s, jobId, i)),
+      }
     }
   }
 

@@ -98,11 +98,24 @@ function jobsToPlainObject(jobs: Workflow['jobs']): Record<string, unknown> {
 }
 
 function jobToPlainObjectSingle(job: import('@/types/workflow').WorkflowJob): Record<string, unknown> {
+  if (typeof job.uses === 'string') {
+    // Reusable workflow caller job: only emit keys allowed by GitHub Actions schema
+    const j: Record<string, unknown> = {}
+    if (job.name !== undefined) j.name = job.name
+    if (job.needs !== undefined) j.needs = job.needs
+    if (job.permissions !== undefined) j.permissions = job.permissions
+    if (job.if !== undefined) j.if = job.if
+    j.uses = job.uses
+    if (job.with && Object.keys(job.with).length > 0) j.with = job.with
+    if (job.secrets !== undefined) j.secrets = job.secrets
+    return j
+  }
+  // Normal job with runs-on and steps
   const { steps, strategy, ...rest } = job
   const j: Record<string, unknown> = {
     ...rest,
     'runs-on': job['runs-on'],
-    steps: steps.map((s) => stepToSerializable(s)),
+    steps: (steps ?? []).map((s) => stepToSerializable(s)),
   }
   if (strategy) {
     const strategyObj: Record<string, unknown> = {}

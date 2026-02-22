@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import type { Workflow, WorkflowJob, WorkflowStep } from '@/types/workflow'
+import { isReusableCallerJob } from '@/types/workflow'
 import {
   COMMON_MATRIX_VARIABLES,
   getMatrixVariableValues,
@@ -179,6 +180,8 @@ export function JobPropertyPanel({
 
   if (!job) return null
 
+  const isReusable = isReusableCallerJob(job)
+
   return (
     <aside className="flex w-96 shrink-0 flex-col border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-4 py-2">
@@ -203,47 +206,197 @@ export function JobPropertyPanel({
             placeholder={jobId}
           />
         </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Runs on</label>
-          <div ref={dropdownRef} className="relative mt-1">
-            <button
-              type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900 dark:text-slate-200"
-            >
-              <span className="flex-shrink-0">{selectedOption.icon}</span>
-              <span className="flex-1">{selectedOption.label}</span>
-              <span className={`text-slate-400 dark:text-slate-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
-            </button>
-            {isDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-lg max-h-60 overflow-auto">
-                {runnerOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleRunsOnChange(option.value)}
-                    className={`w-full px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 ${
-                      option.value === runsOn ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-200'
-                    }`}
-                  >
-                    <span className="flex-shrink-0">{option.icon}</span>
-                    <span>{option.label}</span>
-                  </button>
-                ))}
-                {!runnerOptions.some((opt) => opt.value === runsOn) && (
-                  <button
-                    type="button"
-                    onClick={() => handleRunsOnChange(runsOn)}
-                    className="w-full px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                  >
-                    <span className="flex-shrink-0">{selectedOption.icon}</span>
-                    <span>{runsOn || 'ubuntu-latest'}</span>
-                  </button>
-                )}
+        {isReusable ? (
+          <>
+            <div>
+              <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Reusable workflow</label>
+              <p className="mt-1 break-all rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 px-2 py-1.5 text-xs font-mono text-slate-700 dark:text-slate-300">
+                {job.uses}
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Inputs (with)</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentWith = job.with ?? {}
+                    setJobField('with', { ...currentWith, '': '' })
+                  }}
+                  className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+                >
+                  + Add input
+                </button>
               </div>
-            )}
+              {!job.with || Object.keys(job.with).length === 0 ? (
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">No inputs configured</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {Object.entries(job.with).map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={key}
+                        onChange={(e) => {
+                          const newWith = { ...(job.with ?? {}) }
+                          delete newWith[key]
+                          newWith[e.target.value] = value
+                          setJobField('with', newWith)
+                        }}
+                        className="w-1/3 flex-shrink-0 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                        placeholder="Input name"
+                      />
+                      <input
+                        type="text"
+                        value={String(value ?? '')}
+                        onChange={(e) => {
+                          const newWith = { ...(job.with ?? {}), [key]: e.target.value }
+                          setJobField('with', newWith)
+                        }}
+                        className="flex-1 font-mono rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                        placeholder="Value"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newWith = { ...(job.with ?? {}) }
+                          delete newWith[key]
+                          setJobField('with', Object.keys(newWith).length > 0 ? newWith : undefined)
+                        }}
+                        className="rounded p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-600 dark:hover:text-slate-300 shrink-0"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Secrets</label>
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={job.secrets === 'inherit'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setJobField('secrets', 'inherit')
+                        } else {
+                          setJobField('secrets', undefined)
+                        }
+                      }}
+                      className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-600"
+                    />
+                    inherit
+                  </label>
+                  {job.secrets !== 'inherit' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = (job.secrets as Record<string, string> | undefined) ?? {}
+                        setJobField('secrets', { ...current, '': '' })
+                      }}
+                      className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600"
+                    >
+                      + Add secret
+                    </button>
+                  )}
+                </div>
+              </div>
+              {job.secrets === 'inherit' ? (
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">All secrets inherited from caller</p>
+              ) : !job.secrets || Object.keys(job.secrets).length === 0 ? (
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">No secrets configured</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {Object.entries(job.secrets as Record<string, string>).map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={key}
+                        onChange={(e) => {
+                          const current = (job.secrets as Record<string, string> | undefined) ?? {}
+                          const updated = { ...current }
+                          delete updated[key]
+                          updated[e.target.value] = value
+                          setJobField('secrets', updated)
+                        }}
+                        className="w-1/3 flex-shrink-0 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                        placeholder="Secret name"
+                      />
+                      <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => {
+                          const current = (job.secrets as Record<string, string> | undefined) ?? {}
+                          setJobField('secrets', { ...current, [key]: e.target.value })
+                        }}
+                        className="flex-1 font-mono rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-2 py-1 text-xs"
+                        placeholder="${{ secrets.MY_SECRET }}"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const current = (job.secrets as Record<string, string> | undefined) ?? {}
+                          const updated = { ...current }
+                          delete updated[key]
+                          setJobField('secrets', Object.keys(updated).length > 0 ? updated : undefined)
+                        }}
+                        className="rounded p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-600 dark:hover:text-slate-300 shrink-0"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div>
+            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Runs on</label>
+            <div ref={dropdownRef} className="relative mt-1">
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900 dark:text-slate-200"
+              >
+                <span className="flex-shrink-0">{selectedOption.icon}</span>
+                <span className="flex-1">{selectedOption.label}</span>
+                <span className={`text-slate-400 dark:text-slate-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-lg max-h-60 overflow-auto">
+                  {runnerOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleRunsOnChange(option.value)}
+                      className={`w-full px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 ${
+                        option.value === runsOn ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-200'
+                      }`}
+                    >
+                      <span className="flex-shrink-0">{option.icon}</span>
+                      <span>{option.label}</span>
+                    </button>
+                  ))}
+                  {!runnerOptions.some((opt) => opt.value === runsOn) && (
+                    <button
+                      type="button"
+                      onClick={() => handleRunsOnChange(runsOn)}
+                      className="w-full px-2 py-1.5 text-sm text-left flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    >
+                      <span className="flex-shrink-0">{selectedOption.icon}</span>
+                      <span>{runsOn || 'ubuntu-latest'}</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
         <div>
           <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Needs</label>
           {otherJobIds.length === 0 ? (
@@ -268,7 +421,7 @@ export function JobPropertyPanel({
             </ul>
           )}
         </div>
-        <div>
+        {!isReusable && <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Environment Variables</label>
             <button
@@ -334,9 +487,9 @@ export function JobPropertyPanel({
               ))}
             </div>
           )}
-        </div>
+        </div>}
 
-        <div>
+        {!isReusable && <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Matrix Strategy</label>
             <button
@@ -714,9 +867,9 @@ export function JobPropertyPanel({
               </div>
             </div>
           )}
-        </div>
+        </div>}
 
-        <div>
+        {!isReusable && <div>
           <div className="flex items-center justify-between">
             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Steps</label>
             <button
@@ -858,7 +1011,7 @@ export function JobPropertyPanel({
               </li>
             ))}
           </ul>
-        </div>
+        </div>}
       </div>
       {onDeleteJob && (
         <div 

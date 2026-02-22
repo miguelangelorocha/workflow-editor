@@ -61,7 +61,7 @@ function AppInner() {
   const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
   const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
   const [parseErrors, setParseErrors] = useState<string[]>([])
-  const [lintErrors, setLintErrors] = useState<LintError[]>([])
+  const [dismissedWorkflow, setDismissedWorkflow] = useState<Workflow | null>(null)
   const [showSourceDialog, setShowSourceDialog] = useState(false)
   const [isEditingWorkflowName, setIsEditingWorkflowName] = useState(false)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
@@ -159,31 +159,24 @@ function AppInner() {
   const w = workflow ?? { name: '', on: {}, jobs: {} }
   const { nodes: baseNodes, edges } = workflowToFlowNodesEdges(w)
 
-  // Validate workflow YAML whenever it changes (using official @actions/workflow-parser)
-  useEffect(() => {
-    if (workflow) {
-      const hasJobs = workflow.jobs && Object.keys(workflow.jobs).length > 0
-      const hasTriggers =
-        workflow.on &&
-        (typeof workflow.on === 'string' ||
-          (Array.isArray(workflow.on) && workflow.on.length > 0) ||
-          (typeof workflow.on === 'object' && Object.keys(workflow.on).length > 0))
-      const hasContent = hasJobs || hasTriggers
-
-      // Skip validation for an entirely empty workflow so that opening a brand-new
-      // (empty) file shows the onboarding UI without noisy validation errors.
-      if (!hasContent) {
-        setLintErrors([])
-        return
-      }
-
-      const yaml = serializeWorkflow(workflow)
-      const errors = validateWorkflowYaml(yaml, currentFilename)
-      setLintErrors(errors)
-    } else {
-      setLintErrors([])
-    }
+  // Derive lint errors from workflow during render (no effect needed)
+  const computedLintErrors = useMemo<LintError[]>(() => {
+    if (!workflow) return []
+    const hasJobs = workflow.jobs && Object.keys(workflow.jobs).length > 0
+    const hasTriggers =
+      workflow.on &&
+      (typeof workflow.on === 'string' ||
+        (Array.isArray(workflow.on) && workflow.on.length > 0) ||
+        (typeof workflow.on === 'object' && Object.keys(workflow.on).length > 0))
+    // Skip validation for an entirely empty workflow so that opening a brand-new
+    // (empty) file shows the onboarding UI without noisy validation errors.
+    if (!hasJobs && !hasTriggers) return []
+    return validateWorkflowYaml(serializeWorkflow(workflow), currentFilename)
   }, [workflow, currentFilename])
+
+  // Dismissed state: tracks which workflow object the user dismissed errors for.
+  // As soon as the workflow changes (new reference), errors reappear automatically.
+  const lintErrors = dismissedWorkflow === workflow ? [] : computedLintErrors
 
   const handleRequestDeleteJob = useCallback(
     (jobId: string) => {
@@ -635,7 +628,7 @@ function AppInner() {
               type="button"
               onClick={() => {
                 setParseErrors([])
-                setLintErrors([])
+                setDismissedWorkflow(workflow)
               }}
               className="shrink-0 rounded p-1 hover:bg-amber-100 dark:hover:bg-amber-800/50"
               aria-label="Dismiss errors"

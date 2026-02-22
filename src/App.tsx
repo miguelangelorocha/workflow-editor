@@ -55,21 +55,12 @@ const sampleWorkflow: Workflow = {
 
 function AppInner() {
   const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  
-  // Handle mounting - next-themes needs this to avoid hydration issues
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-  
   const toggleTheme = () => {
-    if (!mounted) return
     // Get the current resolved theme (actual theme being used)
     const currentTheme = resolvedTheme || theme || 'light'
     // Toggle to the opposite
     const nextTheme = currentTheme === 'dark' ? 'light' : 'dark'
-    console.log('Toggling theme:', { currentTheme, nextTheme, theme, resolvedTheme, mounted })
-    
+
     // Apply theme immediately as fallback
     const root = document.documentElement
     if (nextTheme === 'dark') {
@@ -82,15 +73,13 @@ function AppInner() {
     setTheme(nextTheme)
   }
   
-  // Use resolvedTheme for display (handles 'system' theme)
-  // resolvedTheme is undefined until mounted, so fallback to theme
-  const displayTheme = mounted ? (resolvedTheme || theme || 'light') : 'light'
+  const displayTheme = resolvedTheme || theme || 'light'
   const [workflow, setWorkflow] = useState<Workflow | null>(null)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [selectedTrigger, setSelectedTrigger] = useState<boolean>(false)
   const [showWorkflowProperties, setShowWorkflowProperties] = useState<boolean>(false)
   const [parseErrors, setParseErrors] = useState<string[]>([])
-  const [lintErrors, setLintErrors] = useState<LintError[]>([])
+  const [dismissedWorkflow, setDismissedWorkflow] = useState<Workflow | null>(null)
   const [showPasteDialog, setShowPasteDialog] = useState(false)
   const [showSourceDialog, setShowSourceDialog] = useState(false)
   const [isEditingWorkflowName, setIsEditingWorkflowName] = useState(false)
@@ -104,30 +93,24 @@ function AppInner() {
   const w = workflow ?? { name: '', on: {}, jobs: {} }
   const { nodes: baseNodes, edges } = workflowToFlowNodesEdges(w)
 
-  // Lint workflow whenever it changes
-  useEffect(() => {
-    if (workflow) {
-      const hasJobs = workflow.jobs && Object.keys(workflow.jobs).length > 0
-      const hasTriggers =
-        workflow.on &&
-        (typeof workflow.on === 'string' ||
-          (Array.isArray(workflow.on) && workflow.on.length > 0) ||
-          (typeof workflow.on === 'object' && Object.keys(workflow.on).length > 0))
-      const hasContent = hasJobs || hasTriggers
-
-      // Skip validation for an entirely empty workflow so that opening a brand-new
-      // (empty) file shows the onboarding UI without noisy validation errors.
-      if (!hasContent) {
-        setLintErrors([])
-        return
-      }
-
-      const errors = validateWorkflowYaml(serializeWorkflow(workflow))
-      setLintErrors(errors)
-    } else {
-      setLintErrors([])
-    }
+  // Lint workflow whenever it changes (derived from workflow, no effect needed)
+  const computedLintErrors = useMemo<LintError[]>(() => {
+    if (!workflow) return []
+    const hasJobs = workflow.jobs && Object.keys(workflow.jobs).length > 0
+    const hasTriggers =
+      workflow.on &&
+      (typeof workflow.on === 'string' ||
+        (Array.isArray(workflow.on) && workflow.on.length > 0) ||
+        (typeof workflow.on === 'object' && Object.keys(workflow.on).length > 0))
+    // Skip validation for an entirely empty workflow so that opening a brand-new
+    // (empty) file shows the onboarding UI without noisy validation errors.
+    if (!hasJobs && !hasTriggers) return []
+    return validateWorkflowYaml(serializeWorkflow(workflow))
   }, [workflow])
+
+  // Dismissed state: tracks which workflow object the user dismissed errors for.
+  // As soon as the workflow changes (new reference), errors reappear automatically.
+  const lintErrors = dismissedWorkflow === workflow ? [] : computedLintErrors
 
   const handleRequestDeleteJob = useCallback(
     (jobId: string) => {
@@ -628,7 +611,7 @@ function AppInner() {
               type="button"
               onClick={() => {
                 setParseErrors([])
-                setLintErrors([])
+                setDismissedWorkflow(workflow)
               }}
               className="shrink-0 rounded p-1 hover:bg-amber-100 dark:hover:bg-amber-800/50"
               aria-label="Dismiss errors"
