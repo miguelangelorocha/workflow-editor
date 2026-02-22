@@ -315,4 +315,41 @@ describe('serializeWorkflow', () => {
     // The empty strategy should be omitted from the output
     expect(yaml).not.toContain('strategy')
   })
+
+  it('round-trips a reusable workflow caller job', () => {
+    const yaml = `
+name: Reusable
+on: push
+jobs:
+  code-security:
+    name: SAST Scan
+    uses: org/repo/.github/workflows/sast.yml@v1
+    with:
+      REPOSITORY_NAME: \${{ github.repository }}
+      COMMIT_SHA: \${{ github.sha }}
+      TYPE: ts,nodejs
+    secrets: inherit
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    const job = workflow.jobs['code-security']
+    expect(job.uses).toBe('org/repo/.github/workflows/sast.yml@v1')
+    expect(job['runs-on']).toBeUndefined()
+    expect(job.steps).toBeUndefined()
+    expect((job.with as Record<string, unknown>)['TYPE']).toBe('ts,nodejs')
+    expect(job.secrets).toBe('inherit')
+
+    // Re-serialize and verify runs-on / steps are absent
+    const out = serializeWorkflow(workflow)
+    expect(out).toContain('uses: org/repo/.github/workflows/sast.yml@v1')
+    expect(out).not.toContain('runs-on')
+    expect(out).not.toContain('steps')
+    expect(out).toContain('secrets: inherit')
+
+    // Parse the serialized output and verify round-trip
+    const { workflow: again, errors: errs2 } = parseWorkflow(out)
+    expect(errs2).toEqual([])
+    expect(again.jobs['code-security'].uses).toBe('org/repo/.github/workflows/sast.yml@v1')
+    expect(again.jobs['code-security']['runs-on']).toBeUndefined()
+  })
 })

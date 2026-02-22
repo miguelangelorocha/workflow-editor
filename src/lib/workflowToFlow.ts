@@ -17,6 +17,7 @@ export type JobNodeData = {
   stepCount: number
   hasMatrix?: boolean
   matrixCombinations?: number
+  isReusable?: boolean
 }
 
 export type TriggerNodeData = {
@@ -135,13 +136,17 @@ export function workflowToFlowNodesEdges(workflow: Workflow): {
       const jobId = column[rowIndex]
       const job = workflow.jobs[jobId]
       const y = rowIndex * (NODE_HEIGHT + VERTICAL_GAP)
-      const runsOn = Array.isArray(job['runs-on'])
-        ? job['runs-on'].join(', ')
-        /* v8 ignore next */
-        : String(job['runs-on'] ?? '')
+      const reusable = typeof job.uses === 'string'
+      /* v8 ignore next 3 */
+      const runsOn = reusable
+        ? ''
+        : Array.isArray(job['runs-on'])
+          ? job['runs-on'].join(', ')
+          /* v8 ignore next */
+          : String(job['runs-on'] ?? '')
       /* v8 ignore next */
-      const stepCount = job.steps?.length ?? 0
-      const hasMatrix = !!job.strategy?.matrix && Object.keys(job.strategy.matrix).length > 0
+      const stepCount = reusable ? 0 : (job.steps?.length ?? 0)
+      const hasMatrix = !reusable && !!job.strategy?.matrix && Object.keys(job.strategy.matrix).length > 0
       let matrixCombinations: number | undefined
       if (hasMatrix && job.strategy?.matrix) {
         matrixCombinations = Object.values(job.strategy.matrix).reduce(
@@ -161,6 +166,7 @@ export function workflowToFlowNodesEdges(workflow: Workflow): {
           stepCount,
           hasMatrix,
           matrixCombinations,
+          isReusable: reusable,
         },
       })
     }

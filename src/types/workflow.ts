@@ -22,16 +22,32 @@ export interface WorkflowJobStrategy {
 
 export interface WorkflowJob {
   name?: string
-  'runs-on': string | string[]
+  /** Present on normal jobs; absent on reusable workflow caller jobs. */
+  'runs-on'?: string | string[]
+  /**
+   * Present on reusable workflow caller jobs (job-level `uses`).
+   * When set, `runs-on` and `steps` must be absent.
+   */
+  uses?: string
+  /** Inputs passed to a reusable workflow caller job. */
+  with?: Record<string, unknown>
+  /** Secrets passed to a reusable workflow caller job. */
+  secrets?: Record<string, string> | 'inherit'
   needs?: string | string[]
   permissions?: Record<string, string>
   env?: Record<string, string>
-  steps: WorkflowStep[]
+  /** Present on normal jobs; absent on reusable workflow caller jobs. */
+  steps?: WorkflowStep[]
   strategy?: WorkflowJobStrategy
   container?: unknown
   services?: Record<string, unknown>
   if?: string
   [key: string]: unknown
+}
+
+/** Returns true when the job calls a reusable workflow via job-level `uses`. */
+export function isReusableCallerJob(job: WorkflowJob): boolean {
+  return typeof job.uses === 'string'
 }
 
 export interface Workflow {
