@@ -81,6 +81,8 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+      id-token: write
+      attestations: write
     outputs:
       new_release_published: ${{ steps.semantic-release.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic-release.outputs.new_release_version }}
@@ -151,6 +153,12 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Attest build provenance
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        uses: actions/attest-build-provenance@96278af6caaf10aea03fd8d33a09a777ca52d62f # v3.2.0
+        with:
+          subject-path: '*.vsix'
 
   publish:
     name: Publish
