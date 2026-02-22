@@ -60,8 +60,7 @@ function AppInner() {
     const currentTheme = resolvedTheme || theme || 'light'
     // Toggle to the opposite
     const nextTheme = currentTheme === 'dark' ? 'light' : 'dark'
-    console.log('Toggling theme:', { currentTheme, nextTheme, theme, resolvedTheme })
-    
+
     // Apply theme immediately as fallback
     const root = document.documentElement
     if (nextTheme === 'dark') {
