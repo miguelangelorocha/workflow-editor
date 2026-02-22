@@ -175,4 +175,49 @@ jobs:
     expect(jobIds).toContain('a')
     expect(jobIds).toContain('b')
   })
+
+  it('produces correct node data for a reusable workflow caller job', () => {
+    const yaml = `
+name: Reusable
+on: push
+jobs:
+  call:
+    uses: org/repo/.github/workflows/ci.yml@main
+    secrets: inherit
+`
+    const { workflow } = parseWorkflow(yaml)
+    const { nodes } = workflowToFlowNodesEdges(workflow)
+    const jobNode = nodes.find((n) => n.type === 'job' && n.id === 'call')
+    expect(jobNode).toBeDefined()
+    const data = jobNode!.data as { runsOn: string; stepCount: number; isReusable: boolean }
+    expect(data.runsOn).toBe('')
+    expect(data.stepCount).toBe(0)
+    expect(data.isReusable).toBe(true)
+  })
+
+  it('handles non-reusable job with undefined runs-on (falls back to empty string)', () => {
+    const workflow = {
+      on: 'push',
+      jobs: {
+        build: { 'runs-on': undefined as unknown as string, steps: [{ run: 'echo hi' }] },
+      },
+    }
+    const { nodes } = workflowToFlowNodesEdges(workflow as Parameters<typeof workflowToFlowNodesEdges>[0])
+    const jobNode = nodes.find((n) => n.type === 'job')
+    expect(jobNode).toBeDefined()
+    expect((jobNode!.data as { runsOn: string }).runsOn).toBe('')
+  })
+
+  it('handles non-reusable job with undefined steps (step count falls back to 0)', () => {
+    const workflow = {
+      on: 'push',
+      jobs: {
+        build: { 'runs-on': 'ubuntu-latest', steps: undefined as unknown as [] },
+      },
+    }
+    const { nodes } = workflowToFlowNodesEdges(workflow as Parameters<typeof workflowToFlowNodesEdges>[0])
+    const jobNode = nodes.find((n) => n.type === 'job')
+    expect(jobNode).toBeDefined()
+    expect((jobNode!.data as { stepCount: number }).stepCount).toBe(0)
+  })
 })

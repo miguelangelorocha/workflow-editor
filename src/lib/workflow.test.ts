@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { parseWorkflow } from './parseWorkflow'
 import { serializeWorkflow } from './serializeWorkflow'
+import { isReusableCallerJob } from '@/types/workflow'
 
 const minimalWorkflow = `
 name: Minimal
@@ -202,6 +203,85 @@ jobs:
     // The type guard branch is exercised; the spread preserves the raw YAML value
     expect(workflow.jobs.build.steps[0].env).toBe('not-an-object')
   })
+
+  it('parses job with permissions object', () => {
+    const yaml = `
+name: Permissions
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - run: echo hi
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.build.permissions).toEqual({ contents: 'read', issues: 'write' })
+  })
+
+  it('parses job with if condition', () => {
+    const yaml = `
+name: Conditional
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "github.event_name == 'push'"
+    steps:
+      - run: echo hi
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.build.if).toBe("github.event_name == 'push'")
+  })
+
+  it('parses reusable job without with field', () => {
+    const yaml = `
+name: Reusable No With
+on: push
+jobs:
+  call:
+    uses: org/repo/.github/workflows/ci.yml@main
+    secrets: inherit
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.call.uses).toBe('org/repo/.github/workflows/ci.yml@main')
+    expect(workflow.jobs.call.with).toBeUndefined()
+    expect(workflow.jobs.call.secrets).toBe('inherit')
+  })
+
+  it('parses reusable job with secrets as a map', () => {
+    const yaml = `
+name: Reusable Secrets Map
+on: push
+jobs:
+  call:
+    uses: org/repo/.github/workflows/ci.yml@main
+    secrets:
+      MY_SECRET: \${{ secrets.MY_TOKEN }}
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.call.secrets).toEqual({ MY_SECRET: '${{ secrets.MY_TOKEN }}' })
+  })
+
+  it('parses reusable job with no secrets', () => {
+    const yaml = `
+name: Reusable No Secrets
+on: push
+jobs:
+  call:
+    uses: org/repo/.github/workflows/ci.yml@main
+`
+    const { workflow, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(workflow.jobs.call.uses).toBe('org/repo/.github/workflows/ci.yml@main')
+    expect(workflow.jobs.call.secrets).toBeUndefined()
+  })
 })
 
 describe('serializeWorkflow', () => {
@@ -351,5 +431,81 @@ jobs:
     expect(errs2).toEqual([])
     expect(again.jobs['code-security'].uses).toBe('org/repo/.github/workflows/sast.yml@v1')
     expect(again.jobs['code-security']['runs-on']).toBeUndefined()
+  })
+
+  it('serializes reusable job without a name', () => {
+    const { workflow } = parseWorkflow(`
+on: push
+jobs:
+  call:
+    uses: org/repo/.github/workflows/ci.yml@main
+`)
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('uses: org/repo/.github/workflows/ci.yml@main')
+    // Reusable job has no name → the job block should not have a name key
+    const { workflow: again } = parseWorkflow(yaml)
+    expect(again.jobs.call.name).toBeUndefined()
+  })
+
+  it('serializes reusable job with needs, permissions, and if', () => {
+    const { workflow } = parseWorkflow(`
+name: Full Reusable
+on: push
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo setup
+  call:
+    needs: setup
+    if: "github.ref == 'refs/heads/main'"
+    uses: org/repo/.github/workflows/deploy.yml@main
+    permissions:
+      contents: read
+      deployments: write
+    secrets: inherit
+`)
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('needs: setup')
+    expect(yaml).toContain("if: github.ref == 'refs/heads/main'")
+    expect(yaml).toContain('uses: org/repo/.github/workflows/deploy.yml@main')
+    expect(yaml).toContain('contents: read')
+    expect(yaml).toContain('deployments: write')
+    const { workflow: again, errors } = parseWorkflow(yaml)
+    expect(errors).toEqual([])
+    expect(again.jobs.call.needs).toBe('setup')
+    expect(again.jobs.call.if).toBe("github.ref == 'refs/heads/main'")
+    expect(again.jobs.call.permissions).toMatchObject({ contents: 'read', deployments: 'write' })
+  })
+
+  it('serializes reusable job with secrets as a map', () => {
+    const { workflow } = parseWorkflow(`
+name: Secrets Map
+on: push
+jobs:
+  call:
+    uses: org/repo/.github/workflows/ci.yml@main
+    secrets:
+      TOKEN: \${{ secrets.MY_TOKEN }}
+`)
+    const yaml = serializeWorkflow(workflow)
+    expect(yaml).toContain('TOKEN')
+    expect(yaml).toContain('secrets.MY_TOKEN')
+    const { workflow: again } = parseWorkflow(yaml)
+    expect(again.jobs.call.secrets).toMatchObject({ TOKEN: '${{ secrets.MY_TOKEN }}' })
+  })
+})
+
+describe('isReusableCallerJob', () => {
+  it('returns true for a job with a string uses field', () => {
+    expect(isReusableCallerJob({ uses: 'org/repo/.github/workflows/ci.yml@main', 'runs-on': undefined })).toBe(true)
+  })
+
+  it('returns false for a normal job without uses', () => {
+    expect(isReusableCallerJob({ 'runs-on': 'ubuntu-latest', steps: [] })).toBe(false)
+  })
+
+  it('returns false when uses is not a string', () => {
+    expect(isReusableCallerJob({ uses: undefined, 'runs-on': 'ubuntu-latest' })).toBe(false)
   })
 })
