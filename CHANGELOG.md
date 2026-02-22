@@ -1,3 +1,11 @@
+## [1.2.33](https://github.com/timoa/workflow-editor/compare/v1.2.32...v1.2.33) (2026-02-22)
+
+
+### Bug Fixes
+
+* **cicd:** sign the released .vsix files in the GitHub Releases ([23c8f3c](https://github.com/timoa/workflow-editor/commit/23c8f3c539ea35d2bac47c92f9ed6afd61d70a45))
+* **docs:** move the Contributing section to a CONTRIBUTION.md file ([fdc013c](https://github.com/timoa/workflow-editor/commit/fdc013cf67e0fac92d7c00e2c2056fa5db8e17e2))
+
 ## [1.2.32](https://github.com/timoa/workflow-editor/compare/v1.2.31...v1.2.32) (2026-02-22)
 
 
