@@ -1,6 +1,6 @@
 ---
 description: TypeScript, React, and general coding standards
-globs: "**/*.{ts,tsx}"
+globs: "src/**/*.{ts,tsx}"
 alwaysApply: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Unit testing and property-based fuzz testing with Vitest and fast-check
-globs: "**/*.test.{ts,tsx}"
+globs: "src/**/*.test.{ts,tsx}"
 alwaysApply: false
 ---
 

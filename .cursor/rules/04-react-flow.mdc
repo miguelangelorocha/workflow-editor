@@ -1,6 +1,6 @@
 ---
 description: React Flow usage and workflow graph conventions
-globs: "**/*.tsx"
+globs: "src/**/*.tsx"
 alwaysApply: false
 ---
 

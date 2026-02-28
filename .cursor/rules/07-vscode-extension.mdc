@@ -1,6 +1,7 @@
 ---
 description: VSCode extension development patterns and guidelines
-alwaysApply: true
+globs: ["src/extension/**/*.ts", "src/webview/**/*.{ts,tsx}"]
+alwaysApply: false
 ---
 
 # VSCode Extension Development

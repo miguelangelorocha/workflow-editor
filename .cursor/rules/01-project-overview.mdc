@@ -1,6 +1,7 @@
 ---
 description: Project overview, stack, and structure for Workflow Editor
-alwaysApply: true
+globs: ["src/**"]
+alwaysApply: false
 ---
 
 # Workflow Editor – Project Overview

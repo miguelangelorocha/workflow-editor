@@ -1,6 +1,6 @@
 ---
 description: Security practices – OpenSSF Scorecard, CodeQL, and dependency auditing
-globs: ".github/workflows/*.yml"
+globs: [".github/workflows/*.yml", "src/**"]
 alwaysApply: false
 ---
 

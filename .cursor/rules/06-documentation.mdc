@@ -1,6 +1,7 @@
 ---
 description: Documentation and maintenance standards
-alwaysApply: true
+globs: ["src/**", "README.md"]
+alwaysApply: false
 ---
 
 # Documentation Standards
