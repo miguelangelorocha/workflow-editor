@@ -1,3 +1,11 @@
+## [1.2.34](https://github.com/timoa/workflow-editor/compare/v1.2.33...v1.2.34) (2026-03-02)
+
+
+### Bug Fixes
+
+* **deps:** fix minimatch only for eslint ([ee6b3be](https://github.com/timoa/workflow-editor/commit/ee6b3beb4f5f44de9969e160783f456ffeb62a84))
+* **deps:** fix new deps vulnerabilities ([03395f0](https://github.com/timoa/workflow-editor/commit/03395f0378fbed7438c119dd142fd9790adfab2e))
+
 ## [1.2.33](https://github.com/timoa/workflow-editor/compare/v1.2.32...v1.2.33) (2026-02-22)
 
 
