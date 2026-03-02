@@ -114,7 +114,10 @@
     "overrides": {
       "markdown-it": ">=14.1.1",
       "test-exclude>minimatch": ">=10.2.1",
-      "qs": ">=6.14.2"
+      "qs": ">=6.14.2",
+      "rollup": ">=4.59.0",
+      "minimatch": ">=10.2.3",
+      "serialize-javascript": ">=7.0.3"
     },
     "auditConfig": {
       "ignoreGhsas": [
