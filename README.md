@@ -11,7 +11,7 @@
 [![Publish](https://github.com/timoa/workflow-editor/actions/workflows/publish.yml/badge.svg)](https://github.com/timoa/workflow-editor/actions/workflows/publish.yml)
 [![License](https://img.shields.io/github/license/timoa/workflow-editor)](LICENSE)
 
-> **_WARNING:_** This extension is currently in heavy development and can have a few bugs. Please save your changes on Git before updating your Workflows
+> **_WARNING:_** This extension is currently in early development and can have a few bugs. Please save your changes on Git before updating your Workflows
 
 A VSCode extension providing a visual editor for GitHub Actions workflow files. Open a workflow (YAML), view jobs and steps as a diagram, edit job properties in a side panel, and save back to YAML.
 
@@ -92,6 +92,10 @@ This project is built and maintained with security and quality in mind:
 - **Cursor**: Compatible (VSCode-compatible extension)
 - **Windsurf**: Compatible (VSCode-compatible extension)
 - **Other VSCode-based IDEs**: Should work with any IDE that supports VSCode extensions
+
+## Related Projects
+
+**[Workflow Metrics](https://github.com/timoa/workflow-metrics)** — An open-source dashboard that surfaces GitHub Actions metrics (run history, DORA metrics, build minutes, efficiency insights) and lets you optimize workflows with AI-powered suggestions. If you use Workflow Editor to build your workflows, Workflow Metrics is the natural next step to measure and improve them.
 
 ## Contributing
 
