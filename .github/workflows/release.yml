@@ -73,6 +73,9 @@ jobs:
           pnpm run compile
           pnpm run webpack
 
+      - name: Package extension
+        run: pnpm run package
+
   release:
     name: Release
     runs-on: ubuntu-latest
