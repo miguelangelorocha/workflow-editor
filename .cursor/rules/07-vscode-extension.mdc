@@ -96,6 +96,11 @@ vscode.postMessage({
 - **Cursor**: Compatible (VSCode-compatible extension).
 - **Windsurf**: Compatible (VSCode-compatible extension).
 - **Minimum VSCode Version**: `^1.80.0` (defined in `package.json` `engines.vscode`).
+- **Cursor compatibility**: Latest Cursor uses VS Code 1.105.1. Keep `engines.vscode` at `^1.80.0` so the extension loads in Cursor's Extension Development Host (F5).
+
+### engines.vscode and @types/vscode
+
+**Keep `engines.vscode` and `@types/vscode` in sync.** The `vsce` tool validates that `@types/vscode` does not exceed the declared `engines.vscode` range. Use matching versions (e.g. `engines.vscode: "^1.80.0"` with `@types/vscode@1.80.0`). When upgrading `@types/vscode`, bump `engines.vscode` to match; when downgrading for compatibility (e.g. F5 in older editors), use an older `@types/vscode`. Otherwise `vsce package` fails with: "Either upgrade engines.vscode or use an older @types/vscode version".
 
 ## File Structure
 
