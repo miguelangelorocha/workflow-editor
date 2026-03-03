@@ -1,3 +1,10 @@
+## [1.2.35](https://github.com/timoa/workflow-editor/compare/v1.2.34...v1.2.35) (2026-03-03)
+
+
+### Bug Fixes
+
+* **deps:** pin versions of all workflow GitHub Actions and NPM packages ([a2fd07a](https://github.com/timoa/workflow-editor/commit/a2fd07acf5046fe5e0cfdd9efd4cc9bf7ddccdb3))
+
 ## [1.2.34](https://github.com/timoa/workflow-editor/compare/v1.2.33...v1.2.34) (2026-03-02)
 
 
