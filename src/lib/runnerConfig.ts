@@ -12,7 +12,7 @@ export interface RunnerOptionConfig {
   iconType: RunnerIconType
 }
 
-export const RUNNER_OPTIONS: RunnerOptionConfig[] = [
+const runnerOptions: RunnerOptionConfig[] = [
   { value: 'ubuntu-latest', label: 'Ubuntu Latest', iconType: 'linux' },
   { value: 'ubuntu-slim', label: 'Ubuntu Slim', iconType: 'linux' },
   { value: 'ubuntu-24.04', label: 'Ubuntu 24.04', iconType: 'linux' },
@@ -32,3 +32,5 @@ export const RUNNER_OPTIONS: RunnerOptionConfig[] = [
   { value: 'windows-2022', label: 'Windows 2022', iconType: 'windows' },
   { value: 'self-hosted', label: 'Self-hosted', iconType: 'server' },
 ]
+runnerOptions.forEach((opt) => Object.freeze(opt))
+export const RUNNER_OPTIONS: ReadonlyArray<Readonly<RunnerOptionConfig>> = Object.freeze(runnerOptions)
