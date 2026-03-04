@@ -26,7 +26,7 @@ export function run(): Promise<void> {
     return results;
   }
 
-  for (const file of collectTestFiles(testsRoot)) {
+  for (const file of collectTestFiles(testsRoot).sort()) {
     mocha.addFile(file);
   }
 
