@@ -32,5 +32,7 @@ const runnerOptions: RunnerOptionConfig[] = [
   { value: 'windows-2022', label: 'Windows 2022', iconType: 'windows' },
   { value: 'self-hosted', label: 'Self-hosted', iconType: 'server' },
 ]
-runnerOptions.forEach((opt) => Object.freeze(opt))
+runnerOptions.forEach((opt) => {
+  Object.freeze(opt)
+})
 export const RUNNER_OPTIONS: ReadonlyArray<Readonly<RunnerOptionConfig>> = Object.freeze(runnerOptions)
