@@ -17,6 +17,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/extension/**/*", "src/types/**/*"],
-  "exclude": ["node_modules", "src/webview", "**/*.test.ts", "**/*.test.tsx"]
+  "include": ["src/extension/**/*", "src/types/**/*", "src/test/**/*"],
+  "exclude": ["node_modules", "src/webview", "src/lib/**/*.test.ts", "src/lib/**/*.test.tsx"]
 }
