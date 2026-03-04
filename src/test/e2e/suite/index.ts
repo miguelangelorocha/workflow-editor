@@ -1,6 +1,8 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import Mocha from 'mocha';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const Mocha = require(path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', 'mocha'));
 
 export function run(): Promise<void> {
   const mocha = new Mocha({
@@ -17,7 +19,7 @@ export function run(): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
-    mocha.run((failures) => {
+    mocha.run((failures: number) => {
       if (failures > 0) {
         reject(new Error(`${failures} test(s) failed.`));
       } else {

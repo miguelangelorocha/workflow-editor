@@ -2,7 +2,6 @@ import * as assert from 'node:assert';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 
-const EXTENSION_ID = 'Timoa.workflow-visual-editor';
 const OPEN_WITH_EDITOR_CMD = 'workflow-visual-editor.openWithEditor';
 
 const workspaceDir = process.env.E2E_WORKSPACE_DIR ?? '';
@@ -12,19 +11,11 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function ensureExtensionActivated(): Promise<void> {
-  const ext = vscode.extensions.getExtension(EXTENSION_ID);
-  if (!ext) {
-    throw new Error(`Extension ${EXTENSION_ID} not found. Is it installed?`);
-  }
-  if (!ext.isActive) {
-    await ext.activate();
-  }
-}
-
 suite('Workflow Editor E2E', () => {
   suiteSetup(async () => {
-    await ensureExtensionActivated();
+    // When launched via extensionDevelopmentPath, the extension is already
+    // active before the test suite runs. Give the workbench a moment to settle.
+    await wait(1000);
   });
 
   teardown(async () => {
