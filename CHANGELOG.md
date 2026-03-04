@@ -1,3 +1,10 @@
+## [1.2.37](https://github.com/timoa/workflow-editor/compare/v1.2.36...v1.2.37) (2026-03-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @codemirror/view to v6.39.14 ([4e2d07d](https://github.com/timoa/workflow-editor/commit/4e2d07d10e0672ef09b8bdbb528aadda9fbcb4b4))
+
 ## [1.2.36](https://github.com/timoa/workflow-editor/compare/v1.2.35...v1.2.36) (2026-03-04)
 
 
