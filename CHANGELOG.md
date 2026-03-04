@@ -1,3 +1,14 @@
+## [1.2.38](https://github.com/timoa/workflow-editor/compare/v1.2.37...v1.2.38) (2026-03-04)
+
+
+### Bug Fixes
+
+* **lib:** fix runnerConfig [#86](https://github.com/timoa/workflow-editor/issues/86) ([a2ecf9c](https://github.com/timoa/workflow-editor/commit/a2ecf9cf592529e46e063fc13d5a71439bc83d6d))
+* **workflow:** add missing runner types and remove deprecated [#86](https://github.com/timoa/workflow-editor/issues/86) ([5ae9e48](https://github.com/timoa/workflow-editor/commit/5ae9e4888d7bbe50c915300d924485c6557edbe2))
+* **workflow:** refactoring of the runner type validation [#86](https://github.com/timoa/workflow-editor/issues/86) ([b469ae5](https://github.com/timoa/workflow-editor/commit/b469ae566a68690c4c6562347369d9ff0c199178))
+* **workflow:** refactoring of the runner types [#86](https://github.com/timoa/workflow-editor/issues/86) ([2d4a743](https://github.com/timoa/workflow-editor/commit/2d4a7434b2e28e64cb9820ce7a08e6c4f0bdb545))
+* **workflow:** remove another deprecated ubuntu runner type [#86](https://github.com/timoa/workflow-editor/issues/86) ([235855d](https://github.com/timoa/workflow-editor/commit/235855dbc1bfc242cd0296c7411cb0c9bf2ae658))
+
 ## [1.2.37](https://github.com/timoa/workflow-editor/compare/v1.2.36...v1.2.37) (2026-03-04)
 
 
