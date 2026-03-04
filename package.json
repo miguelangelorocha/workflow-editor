@@ -149,7 +149,7 @@
     "mini-css-extract-plugin": "2.10.0",
     "mocha": "^10.8.2",
     "postcss": "8.5.6",
-    "postcss-loader": "8.2.0",
+    "postcss-loader": "8.2.1",
     "tailwindcss": "4.2.0",
     "ts-loader": "9.5.4",
     "typescript": "5.9.3",
