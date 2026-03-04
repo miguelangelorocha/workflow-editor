@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    exclude: ['src/test/e2e/**'],
     server: {
       deps: {
         // Inline so Vite bundles it and resolves JSON imports (Node ESM requires import attribute for JSON)
