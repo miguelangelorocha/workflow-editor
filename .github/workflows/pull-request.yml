@@ -104,7 +104,9 @@ jobs:
             api.github.com:443
             api.mcp.github.com:443
             github.com:443
+            main.vscode-cdn.net:443
             marketplace.visualstudio.com:443
+            redirector.gvt1.com:443
             registry.npmjs.org:443
             update.code.visualstudio.com:443
             vscode.download.prss.microsoft.com:443
