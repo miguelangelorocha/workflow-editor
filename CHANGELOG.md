@@ -1,3 +1,10 @@
+## [1.2.36](https://github.com/timoa/workflow-editor/compare/v1.2.35...v1.2.36) (2026-03-04)
+
+
+### Bug Fixes
+
+* **deps:** fix Underscore vulnerability ([b30d3d3](https://github.com/timoa/workflow-editor/commit/b30d3d3cdd5b00b73dfa6735e0c4c02fc0ab59b5))
+
 ## [1.2.35](https://github.com/timoa/workflow-editor/compare/v1.2.34...v1.2.35) (2026-03-03)
 
 
