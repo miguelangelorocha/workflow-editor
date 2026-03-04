@@ -6,6 +6,7 @@ import {
   getMatrixVariableValues,
   isCommonMatrixVariable,
 } from '@/lib/matrixOptions'
+import { RUNNER_OPTIONS } from '@/lib/runnerConfig'
 import { SiUbuntu, SiApple } from 'react-icons/si'
 import { FaWindows } from 'react-icons/fa'
 import { HiServer, HiPencil } from 'react-icons/hi'
@@ -110,28 +111,19 @@ export function JobPropertyPanel({
 
   const otherJobIds = Object.keys(workflow.jobs).filter((id) => id !== jobId)
 
-  // GitHub Actions runner options with icons
-  const runnerOptions = [
-    { value: 'ubuntu-latest', label: 'Ubuntu Latest', icon: getLinuxIcon() },
-    { value: 'ubuntu-slim', label: 'Ubuntu Slim', icon: getLinuxIcon() },
-    { value: 'ubuntu-24.04', label: 'Ubuntu 24.04', icon: getLinuxIcon() },
-    { value: 'ubuntu-24.04-arm', label: 'Ubuntu 24.04 (ARM)', icon: getLinuxIcon() },
-    { value: 'ubuntu-22.04', label: 'Ubuntu 22.04', icon: getLinuxIcon() },
-    { value: 'ubuntu-22.04-arm', label: 'Ubuntu 22.04 (ARM)', icon: getLinuxIcon() },
-    { value: 'macos-latest', label: 'macOS Latest', icon: getMacIcon() },
-    { value: 'macos-26', label: 'macOS 26', icon: getMacIcon() },
-    { value: 'macos-26-intel', label: 'macOS 26 (Intel)', icon: getMacIcon() },
-    { value: 'macos-15', label: 'macOS 15', icon: getMacIcon() },
-    { value: 'macos-15-intel', label: 'macOS 15 (Intel)', icon: getMacIcon() },
-    { value: 'macos-14', label: 'macOS 14', icon: getMacIcon() },
-    { value: 'windows-latest', label: 'Windows Latest', icon: getWindowsIcon() },
-    { value: 'windows-2025', label: 'Windows 2025', icon: getWindowsIcon() },
-    { value: 'windows-2025-vs2026', label: 'Windows 2025 VS 2026 (preview)', icon: getWindowsIcon() },
-    
-    { value: 'windows-11-arm', label: 'Windows 11 (ARM)', icon: getWindowsIcon() },
-    { value: 'windows-2022', label: 'Windows 2022', icon: getWindowsIcon() },
-    { value: 'self-hosted', label: 'Self-hosted', icon: getServerIcon() },
-  ]
+  const runnerOptions = useMemo(() => {
+    const icons = {
+      linux: getLinuxIcon,
+      mac: getMacIcon,
+      windows: getWindowsIcon,
+      server: getServerIcon,
+    }
+    return RUNNER_OPTIONS.map((opt) => ({
+      value: opt.value,
+      label: opt.label,
+      icon: icons[opt.iconType](),
+    }))
+  }, [])
 
   const selectedOption = runnerOptions.find((opt) => opt.value === runsOn) || {
     value: runsOn,

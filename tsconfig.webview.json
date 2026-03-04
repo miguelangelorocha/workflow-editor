@@ -12,6 +12,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/webview/**/*", "src/types/**/*"],
+  "include": ["src/webview/**/*", "src/lib/**/*", "src/types/**/*"],
   "exclude": ["node_modules", "src/extension", "**/*.test.ts", "**/*.test.tsx"]
 }
