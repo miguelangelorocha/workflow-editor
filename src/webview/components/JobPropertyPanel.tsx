@@ -114,10 +114,10 @@ export function JobPropertyPanel({
   const runnerOptions = [
     { value: 'ubuntu-latest', label: 'Ubuntu Latest', icon: getLinuxIcon() },
     { value: 'ubuntu-slim', label: 'Ubuntu Slim', icon: getLinuxIcon() },
+    { value: 'ubuntu-24.04', label: 'Ubuntu 24.04', icon: getLinuxIcon() },
     { value: 'ubuntu-24.04-arm', label: 'Ubuntu 24.04 (ARM)', icon: getLinuxIcon() },
     { value: 'ubuntu-22.04', label: 'Ubuntu 22.04', icon: getLinuxIcon() },
     { value: 'ubuntu-22.04-arm', label: 'Ubuntu 22.04 (ARM)', icon: getLinuxIcon() },
-    { value: 'ubuntu-20.04', label: 'Ubuntu 20.04', icon: getLinuxIcon() },
     { value: 'macos-latest', label: 'macOS Latest', icon: getMacIcon() },
     { value: 'macos-26', label: 'macOS 26', icon: getMacIcon() },
     { value: 'macos-26-intel', label: 'macOS 26 (Intel)', icon: getMacIcon() },
