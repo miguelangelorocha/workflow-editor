@@ -6,6 +6,7 @@ import {
   getMatrixVariableValues,
   isCommonMatrixVariable,
 } from '@/lib/matrixOptions'
+import { RUNNER_OPTIONS } from '@/lib/runnerConfig'
 import { SiUbuntu, SiApple } from 'react-icons/si'
 import { FaWindows } from 'react-icons/fa'
 import { HiServer, HiPencil } from 'react-icons/hi'
@@ -110,20 +111,19 @@ export function JobPropertyPanel({
 
   const otherJobIds = Object.keys(workflow.jobs).filter((id) => id !== jobId)
 
-  // GitHub Actions runner options with icons
-  const runnerOptions = [
-    { value: 'ubuntu-latest', label: 'Ubuntu Latest', icon: getLinuxIcon() },
-    { value: 'ubuntu-22.04', label: 'Ubuntu 22.04', icon: getLinuxIcon() },
-    { value: 'ubuntu-20.04', label: 'Ubuntu 20.04', icon: getLinuxIcon() },
-    { value: 'macos-latest', label: 'macOS Latest', icon: getMacIcon() },
-    { value: 'macos-14', label: 'macOS 14', icon: getMacIcon() },
-    { value: 'macos-13', label: 'macOS 13', icon: getMacIcon() },
-    { value: 'macos-12', label: 'macOS 12', icon: getMacIcon() },
-    { value: 'windows-latest', label: 'Windows Latest', icon: getWindowsIcon() },
-    { value: 'windows-2022', label: 'Windows 2022', icon: getWindowsIcon() },
-    { value: 'windows-2019', label: 'Windows 2019', icon: getWindowsIcon() },
-    { value: 'self-hosted', label: 'Self-hosted', icon: getServerIcon() },
-  ]
+  const runnerOptions = useMemo(() => {
+    const icons = {
+      linux: getLinuxIcon,
+      mac: getMacIcon,
+      windows: getWindowsIcon,
+      server: getServerIcon,
+    }
+    return RUNNER_OPTIONS.map((opt) => ({
+      value: opt.value,
+      label: opt.label,
+      icon: icons[opt.iconType](),
+    }))
+  }, [])
 
   const selectedOption = runnerOptions.find((opt) => opt.value === runsOn) || {
     value: runsOn,
