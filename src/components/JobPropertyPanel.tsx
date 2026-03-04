@@ -113,15 +113,22 @@ export function JobPropertyPanel({
   // GitHub Actions runner options with icons
   const runnerOptions = [
     { value: 'ubuntu-latest', label: 'Ubuntu Latest', icon: getLinuxIcon() },
+    { value: 'ubuntu-slim', label: 'Ubuntu Slim', icon: getLinuxIcon() },
+    { value: 'ubuntu-24.04-arm', label: 'Ubuntu 24.04 (ARM)', icon: getLinuxIcon() },
     { value: 'ubuntu-22.04', label: 'Ubuntu 22.04', icon: getLinuxIcon() },
+    { value: 'ubuntu-22.04-arm', label: 'Ubuntu 22.04 (ARM)', icon: getLinuxIcon() },
     { value: 'ubuntu-20.04', label: 'Ubuntu 20.04', icon: getLinuxIcon() },
     { value: 'macos-latest', label: 'macOS Latest', icon: getMacIcon() },
+    { value: 'macos-26', label: 'macOS 26', icon: getMacIcon() },
+    { value: 'macos-26-intel', label: 'macOS 26 (Intel)', icon: getMacIcon() },
+    { value: 'macos-15', label: 'macOS 15', icon: getMacIcon() },
+    { value: 'macos-15-intel', label: 'macOS 15 (Intel)', icon: getMacIcon() },
     { value: 'macos-14', label: 'macOS 14', icon: getMacIcon() },
-    { value: 'macos-13', label: 'macOS 13', icon: getMacIcon() },
-    { value: 'macos-12', label: 'macOS 12', icon: getMacIcon() },
     { value: 'windows-latest', label: 'Windows Latest', icon: getWindowsIcon() },
+    { value: 'windows-2025', label: 'Windows 2025', icon: getWindowsIcon() },
+    { value: 'windows-2025-vs2026', label: 'Windows 2025 VS 2026 (preview)', icon: getWindowsIcon() },
+    { value: 'windows-11-arm', label: 'Windows 11 (ARM)', icon: getWindowsIcon() },
     { value: 'windows-2022', label: 'Windows 2022', icon: getWindowsIcon() },
-    { value: 'windows-2019', label: 'Windows 2019', icon: getWindowsIcon() },
     { value: 'self-hosted', label: 'Self-hosted', icon: getServerIcon() },
   ]
 
