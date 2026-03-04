@@ -4,8 +4,16 @@ import * as vscode from 'vscode';
 
 const OPEN_WITH_EDITOR_CMD = 'workflow-visual-editor.openWithEditor';
 
-const workspaceDir = process.env.E2E_WORKSPACE_DIR ?? '';
-const fixturesDir = process.env.E2E_FIXTURES_DIR ?? '';
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+const workspaceDir = requireEnv('E2E_WORKSPACE_DIR');
+const fixturesDir = requireEnv('E2E_FIXTURES_DIR');
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

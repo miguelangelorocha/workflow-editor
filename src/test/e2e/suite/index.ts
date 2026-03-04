@@ -12,10 +12,22 @@ export function run(): Promise<void> {
   });
 
   const testsRoot = path.resolve(__dirname);
-  const files = fs.readdirSync(testsRoot).filter((f) => f.endsWith('.test.js'));
 
-  for (const file of files) {
-    mocha.addFile(path.resolve(testsRoot, file));
+  function collectTestFiles(dir: string): string[] {
+    const results: string[] = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.resolve(dir, entry.name);
+      if (entry.isDirectory()) {
+        results.push(...collectTestFiles(fullPath));
+      } else if (entry.isFile() && entry.name.endsWith('.test.js')) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  }
+
+  for (const file of collectTestFiles(testsRoot)) {
+    mocha.addFile(file);
   }
 
   return new Promise((resolve, reject) => {
