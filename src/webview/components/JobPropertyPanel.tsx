@@ -795,7 +795,16 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                               type="button"
                               onClick={() => {
                                 const newMatrix = { ...job.strategy!.matrix! }
-                                newMatrix[option.name] = [option.values[0]]
+                                const newValue = option.values[0]
+                                const existing = newMatrix[option.name]
+                                if (existing && Array.isArray(existing)) {
+                                  const alreadyHas = existing.some((v) => String(v) === String(newValue))
+                                  newMatrix[option.name] = alreadyHas
+                                    ? existing
+                                    : ([...existing, newValue] as string[] | number[])
+                                } else {
+                                  newMatrix[option.name] = [newValue]
+                                }
                                 setJobField('strategy', {
                                   ...job.strategy,
                                   matrix: newMatrix,
@@ -840,7 +849,15 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                             .map((v) => v.trim())
                             .filter(Boolean)
                           if (name && values.length > 0) {
-                            const newMatrix = { ...job.strategy!.matrix!, [name]: values }
+                            const newMatrix = { ...job.strategy!.matrix! }
+                            const existing = newMatrix[name]
+                            if (existing && Array.isArray(existing)) {
+                              const existingSet = new Set(existing.map(String))
+                              const toAdd = values.filter((v) => !existingSet.has(v))
+                              newMatrix[name] = [...existing, ...toAdd] as string[] | number[]
+                            } else {
+                              newMatrix[name] = values
+                            }
                             setJobField('strategy', {
                               ...job.strategy,
                               matrix: newMatrix,
