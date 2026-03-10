@@ -6,6 +6,7 @@ import {
   getMatrixVariableValues,
   isCommonMatrixVariable,
 } from '@/lib/matrixOptions'
+import { mergeMatrixEntry } from '@/lib/matrixUtils'
 import { RUNNER_OPTIONS } from '@/lib/runnerConfig'
 import { SiUbuntu, SiApple } from 'react-icons/si'
 import { FaWindows } from 'react-icons/fa'
@@ -791,23 +792,11 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                               key={option.name}
                               type="button"
                               onClick={() => {
-                                const newMatrix = { ...job.strategy!.matrix! }
-                                const newValueStr = option.values[0]
-                                const existing = newMatrix[option.name]
-                                if (existing && Array.isArray(existing)) {
-                                  const alreadyHas = existing.some((v) => String(v) === String(newValueStr))
-                                  if (alreadyHas) {
-                                    newMatrix[option.name] = existing
-                                  } else {
-                                    const isNumeric = existing.length > 0 && typeof existing[0] === 'number'
-                                    const n = Number(newValueStr)
-                                    if (isNumeric && Number.isNaN(n)) return
-                                    const coerced = isNumeric ? n : newValueStr
-                                    newMatrix[option.name] = [...existing, coerced] as string[] | number[]
-                                  }
-                                } else {
-                                  newMatrix[option.name] = [newValueStr]
-                                }
+                                const newMatrix = mergeMatrixEntry(
+                                  job.strategy!.matrix!,
+                                  option.name,
+                                  [option.values[0]]
+                                )
                                 setJobField('strategy', {
                                   ...job.strategy,
                                   matrix: newMatrix,
@@ -849,21 +838,11 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                             .map((v) => v.trim())
                             .filter(Boolean)
                           if (name && values.length > 0) {
-                            const newMatrix = { ...job.strategy!.matrix! }
-                            const existing = newMatrix[name]
-                            if (existing && Array.isArray(existing)) {
-                              const existingSet = new Set(existing.map(String))
-                              const isNumeric = existing.length > 0 && typeof existing[0] === 'number'
-                              const toAdd = isNumeric
-                                ? values
-                                    .filter((v) => !existingSet.has(v))
-                                    .map((v) => Number(v))
-                                    .filter((n) => !Number.isNaN(n))
-                                : values.filter((v) => !existingSet.has(v))
-                              newMatrix[name] = [...existing, ...toAdd] as string[] | number[]
-                            } else {
-                              newMatrix[name] = values
-                            }
+                            const newMatrix = mergeMatrixEntry(
+                              job.strategy!.matrix!,
+                              name,
+                              values
+                            )
                             setJobField('strategy', {
                               ...job.strategy,
                               matrix: newMatrix,
