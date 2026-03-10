@@ -132,6 +132,7 @@ export function JobPropertyPanel({
   }
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [addPredefinedOpen, setAddPredefinedOpen] = useState(false)
   const [matrixVariableDropdowns, setMatrixVariableDropdowns] = useState<Record<string, boolean>>({})
   const [matrixValueDropdowns, setMatrixValueDropdowns] = useState<Record<string, boolean>>({})
   const [customMatrixName, setCustomMatrixName] = useState('')
@@ -148,17 +149,18 @@ export function JobPropertyPanel({
       if (!(target instanceof Element)) return
       const isInsideMatrixDropdown = target.closest('[data-matrix-dropdown]')
       if (!isInsideMatrixDropdown) {
+        setAddPredefinedOpen(false)
         setMatrixVariableDropdowns({})
         setMatrixValueDropdowns({})
       }
     }
-    if (isDropdownOpen || Object.keys(matrixVariableDropdowns).length > 0 || Object.keys(matrixValueDropdowns).length > 0) {
+    if (isDropdownOpen || addPredefinedOpen || Object.keys(matrixVariableDropdowns).length > 0 || Object.keys(matrixValueDropdowns).length > 0) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDropdownOpen, matrixVariableDropdowns, matrixValueDropdowns])
+  }, [isDropdownOpen, addPredefinedOpen, matrixVariableDropdowns, matrixValueDropdowns])
 
   const handleRunsOnChange = useCallback(
     (value: string) => {
@@ -776,18 +778,13 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                     <div className="relative">
                       <button
                         type="button"
-                        onClick={() =>
-                          setMatrixVariableDropdowns((prev) => ({
-                            ...prev,
-                            '__new__': !prev['__new__'],
-                          }))
-                        }
+                        onClick={() => setAddPredefinedOpen((prev) => !prev)}
                         className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center justify-between"
                       >
                         <span>+ Add predefined variable</span>
                         <span className="text-slate-400 dark:text-slate-500">▼</span>
                       </button>
-                      {matrixVariableDropdowns['__new__'] && (
+                      {addPredefinedOpen && (
                         <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-lg max-h-60 overflow-auto">
                           {COMMON_MATRIX_VARIABLES.map((option) => (
                             <button
@@ -795,24 +792,27 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                               type="button"
                               onClick={() => {
                                 const newMatrix = { ...job.strategy!.matrix! }
-                                const newValue = option.values[0]
+                                const newValueStr = option.values[0]
                                 const existing = newMatrix[option.name]
                                 if (existing && Array.isArray(existing)) {
-                                  const alreadyHas = existing.some((v) => String(v) === String(newValue))
-                                  newMatrix[option.name] = alreadyHas
-                                    ? existing
-                                    : ([...existing, newValue] as string[] | number[])
+                                  const alreadyHas = existing.some((v) => String(v) === String(newValueStr))
+                                  if (alreadyHas) {
+                                    newMatrix[option.name] = existing
+                                  } else {
+                                    const isNumeric = existing.length > 0 && typeof existing[0] === 'number'
+                                    const n = Number(newValueStr)
+                                    if (isNumeric && Number.isNaN(n)) return
+                                    const coerced = isNumeric ? n : newValueStr
+                                    newMatrix[option.name] = [...existing, coerced] as string[] | number[]
+                                  }
                                 } else {
-                                  newMatrix[option.name] = [newValue]
+                                  newMatrix[option.name] = [newValueStr]
                                 }
                                 setJobField('strategy', {
                                   ...job.strategy,
                                   matrix: newMatrix,
                                 })
-                                setMatrixVariableDropdowns((prev) => ({
-                                  ...prev,
-                                  '__new__': false,
-                                }))
+                                setAddPredefinedOpen(false)
                               }}
                               className="w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-200"
                             >
@@ -853,7 +853,13 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                             const existing = newMatrix[name]
                             if (existing && Array.isArray(existing)) {
                               const existingSet = new Set(existing.map(String))
-                              const toAdd = values.filter((v) => !existingSet.has(v))
+                              const isNumeric = existing.length > 0 && typeof existing[0] === 'number'
+                              const toAdd = isNumeric
+                                ? values
+                                    .filter((v) => !existingSet.has(v))
+                                    .map((v) => Number(v))
+                                    .filter((n) => !Number.isNaN(n))
+                                : values.filter((v) => !existingSet.has(v))
                               newMatrix[name] = [...existing, ...toAdd] as string[] | number[]
                             } else {
                               newMatrix[name] = values
