@@ -6,6 +6,7 @@ import {
   getMatrixVariableValues,
   isCommonMatrixVariable,
 } from '@/lib/matrixOptions'
+import { mergeMatrixEntry } from '@/lib/matrixUtils'
 import { RUNNER_OPTIONS } from '@/lib/runnerConfig'
 import { SiUbuntu, SiApple } from 'react-icons/si'
 import { FaWindows } from 'react-icons/fa'
@@ -132,8 +133,11 @@ export function JobPropertyPanel({
   }
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [addPredefinedOpen, setAddPredefinedOpen] = useState(false)
   const [matrixVariableDropdowns, setMatrixVariableDropdowns] = useState<Record<string, boolean>>({})
   const [matrixValueDropdowns, setMatrixValueDropdowns] = useState<Record<string, boolean>>({})
+  const [customMatrixName, setCustomMatrixName] = useState('')
+  const [customMatrixValues, setCustomMatrixValues] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -146,17 +150,18 @@ export function JobPropertyPanel({
       if (!(target instanceof Element)) return
       const isInsideMatrixDropdown = target.closest('[data-matrix-dropdown]')
       if (!isInsideMatrixDropdown) {
+        setAddPredefinedOpen(false)
         setMatrixVariableDropdowns({})
         setMatrixValueDropdowns({})
       }
     }
-    if (isDropdownOpen || Object.keys(matrixVariableDropdowns).length > 0 || Object.keys(matrixValueDropdowns).length > 0) {
+    if (isDropdownOpen || addPredefinedOpen || Object.keys(matrixVariableDropdowns).length > 0 || Object.keys(matrixValueDropdowns).length > 0) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDropdownOpen, matrixVariableDropdowns, matrixValueDropdowns])
+  }, [isDropdownOpen, addPredefinedOpen, matrixVariableDropdowns, matrixValueDropdowns])
 
   const handleRunsOnChange = useCallback(
     (value: string) => {
@@ -768,68 +773,94 @@ className={`w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg
                   </div>
                 )
                 })}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setMatrixVariableDropdowns((prev) => ({
-                        ...prev,
-                        '__new__': !prev['__new__'],
-                      }))
-                    }
-                    className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center justify-between"
-                  >
-                    <span>+ Add matrix variable</span>
-                    <span className="text-slate-400 dark:text-slate-500">▼</span>
-                  </button>
-                  {matrixVariableDropdowns['__new__'] && (
-                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-lg max-h-60 overflow-auto">
-                      {COMMON_MATRIX_VARIABLES.map((option) => (
-                        <button
-                          key={option.name}
-                          type="button"
-                          onClick={() => {
-                            const newMatrix = { ...job.strategy!.matrix! }
-                            newMatrix[option.name] = [option.values[0]]
+                <div className="space-y-1.5">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-0.5">Predefined (language/version)</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setAddPredefinedOpen((prev) => !prev)}
+                        className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center justify-between"
+                      >
+                        <span>+ Add predefined variable</span>
+                        <span className="text-slate-400 dark:text-slate-500">▼</span>
+                      </button>
+                      {addPredefinedOpen && (
+                        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-lg max-h-60 overflow-auto">
+                          {COMMON_MATRIX_VARIABLES.map((option) => (
+                            <button
+                              key={option.name}
+                              type="button"
+                              onClick={() => {
+                                const newMatrix = mergeMatrixEntry(
+                                  job.strategy!.matrix!,
+                                  option.name,
+                                  [option.values[0]]
+                                )
+                                setJobField('strategy', {
+                                  ...job.strategy,
+                                  matrix: newMatrix,
+                                })
+                                setAddPredefinedOpen(false)
+                              }}
+                              className="w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-200"
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-0.5">Custom variables</label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={customMatrixName}
+                        onChange={(e) => setCustomMatrixName(e.target.value)}
+                        className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-0.5 text-xs"
+                        placeholder="Variable name"
+                      />
+                      <input
+                        type="text"
+                        value={customMatrixValues}
+                        onChange={(e) => setCustomMatrixValues(e.target.value)}
+                        className="flex-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-0.5 text-xs"
+                        placeholder="value1, value2, value3"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const name = customMatrixName.trim()
+                          const values = customMatrixValues
+                            .split(',')
+                            .map((v) => v.trim())
+                            .filter(Boolean)
+                          if (name && values.length > 0) {
+                            const newMatrix = mergeMatrixEntry(
+                              job.strategy!.matrix!,
+                              name,
+                              values
+                            )
                             setJobField('strategy', {
                               ...job.strategy,
                               matrix: newMatrix,
                             })
-                            setMatrixVariableDropdowns((prev) => ({
-                              ...prev,
-                              '__new__': false,
-                            }))
-                          }}
-                          className="w-full px-1.5 py-1 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-200"
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                      <div className="border-t border-slate-200 dark:border-slate-700 px-1.5 py-1">
-                        <input
-                          type="text"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              const input = e.currentTarget
-                              const newMatrix = { ...job.strategy!.matrix!, [input.value]: [''] }
-                              setJobField('strategy', {
-                                ...job.strategy,
-                                matrix: newMatrix,
-                              })
-                              setMatrixVariableDropdowns((prev) => ({
-                                ...prev,
-                                '__new__': false,
-                              }))
-                              input.value = ''
-                            }
-                          }}
-                          className="w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 px-1.5 py-1 text-xs"
-                          placeholder="Custom variable name (Enter)"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
+                            setCustomMatrixName('')
+                            setCustomMatrixValues('')
+                          }
+                        }}
+                        disabled={
+                          !customMatrixName.trim() ||
+                          customMatrixValues.split(',').map((v) => v.trim()).filter(Boolean).length === 0
+                        }
+                        className="rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-1.5 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                      >
+                        Add
+                      </button>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-700 pt-1.5">

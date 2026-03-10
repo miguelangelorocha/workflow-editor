@@ -13,12 +13,12 @@ export const COMMON_MATRIX_VARIABLES: MatrixVariableOption[] = [
   {
     name: 'node',
     label: 'Node.js',
-    values: ['16', '18', '20', '22'],
+    values: ['20', '22', '24', '25'],
   },
   {
     name: 'python',
     label: 'Python',
-    values: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13'],
+    values: ['3.10', '3.11', '3.12', '3.13', '3.14'],
   },
   {
     name: 'os',
@@ -46,27 +46,27 @@ export const COMMON_MATRIX_VARIABLES: MatrixVariableOption[] = [
   {
     name: 'java',
     label: 'Java',
-    values: ['8', '11', '17', '21'],
+    values: ['17', '21', '25'],
   },
   {
     name: 'go',
     label: 'Go',
-    values: ['1.19', '1.20', '1.21', '1.22', '1.23'],
+    values: ['1.25', '1.26'],
   },
   {
     name: 'ruby',
     label: 'Ruby',
-    values: ['3.0', '3.1', '3.2', '3.3'],
+    values: ['3.2', '3.3', '3.4'],
   },
   {
     name: 'php',
     label: 'PHP',
-    values: ['8.0', '8.1', '8.2', '8.3'],
+    values: ['8.2', '8.3', '8.4', '8.5'],
   },
   {
     name: 'dotnet',
     label: '.NET',
-    values: ['6.0', '7.0', '8.0'],
+    values: ['8.0', '9.0', '10.0'],
   },
 ]
 

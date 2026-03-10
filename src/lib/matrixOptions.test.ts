@@ -25,7 +25,7 @@ describe('COMMON_MATRIX_VARIABLES', () => {
 
 describe('getMatrixVariableValues', () => {
   it('returns values for known variable name', () => {
-    expect(getMatrixVariableValues('node')).toEqual(['16', '18', '20', '22'])
+    expect(getMatrixVariableValues('node')).toEqual(['20', '22', '24', '25'])
     expect(getMatrixVariableValues('os')).toContain('ubuntu-latest')
     expect(getMatrixVariableValues('python')).toContain('3.12')
   })
