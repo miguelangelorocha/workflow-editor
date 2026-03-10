@@ -81,4 +81,22 @@ describe('mergeMatrixEntry', () => {
     const result = mergeMatrixEntry(matrix, 'node', ['20', '22'])
     expect(result).toEqual({ node: ['20', '22'] })
   })
+
+  it('dedupes within incoming batch before adding to new key', () => {
+    const matrix: MatrixRecord = {}
+    const result = mergeMatrixEntry(matrix, 'node', ['20', '22', '20', '24'])
+    expect(result).toEqual({ node: ['20', '22', '24'] })
+  })
+
+  it('dedupes within incoming batch before adding to existing array', () => {
+    const matrix: MatrixRecord = { node: ['20'] }
+    const result = mergeMatrixEntry(matrix, 'node', ['22', '24', '22'])
+    expect(result).toEqual({ node: ['20', '22', '24'] })
+  })
+
+  it('preserves version string semantics (3.10 is not 3.1)', () => {
+    const matrix: MatrixRecord = { python: ['3.1', '3.9'] }
+    const result = mergeMatrixEntry(matrix, 'python', ['3.10', '3.11'])
+    expect(result).toEqual({ python: ['3.1', '3.9', '3.10', '3.11'] })
+  })
 })

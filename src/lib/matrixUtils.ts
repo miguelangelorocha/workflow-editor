@@ -20,8 +20,11 @@ export function mergeMatrixEntry(
   key: string,
   incomingValues: string[]
 ): MatrixRecord {
-  const values = incomingValues.map((v) => v.trim()).filter(Boolean)
-  if (values.length === 0) return { ...matrix }
+  const trimmed = incomingValues.map((v) => v.trim()).filter(Boolean)
+  if (trimmed.length === 0) return { ...matrix }
+
+  // Dedupe within incoming batch
+  const values = [...new Set(trimmed)]
 
   const newMatrix = { ...matrix }
   const existing = newMatrix[key]
