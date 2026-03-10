@@ -1,3 +1,15 @@
+## [1.2.41](https://github.com/timoa/workflow-editor/compare/v1.2.40...v1.2.41) (2026-03-10)
+
+
+### Bug Fixes
+
+* **job:** add custom matrix strategy + update predefined version [#75](https://github.com/timoa/workflow-editor/issues/75) ([afaab75](https://github.com/timoa/workflow-editor/commit/afaab75de1598c3b2893c1f84fd9ea3bc4f5c35d))
+* **job:** fix job properties [#75](https://github.com/timoa/workflow-editor/issues/75) ([f9ae7ee](https://github.com/timoa/workflow-editor/commit/f9ae7ee0053093ebe456e9db3698c5da6a3935f7))
+* **job:** fix matrixUtils test and small refactoring [#75](https://github.com/timoa/workflow-editor/issues/75) ([83ce5d1](https://github.com/timoa/workflow-editor/commit/83ce5d163fac55728508d77ba57d39d7e0dda7c1))
+* **job:** prevent silent matrix-key overwrite [#75](https://github.com/timoa/workflow-editor/issues/75) ([022982c](https://github.com/timoa/workflow-editor/commit/022982c94ecc0c41ae727d78b25ef2b262d0de40))
+* **job:** remove duplicated Matrix entries [#75](https://github.com/timoa/workflow-editor/issues/75) ([b36fb77](https://github.com/timoa/workflow-editor/commit/b36fb773cbf9c31db6977952363c58f012e85d34))
+* **test:** fix the matrix strategy test [#75](https://github.com/timoa/workflow-editor/issues/75) ([2bf1617](https://github.com/timoa/workflow-editor/commit/2bf16174c263bd6b3e2ec6330908d8f3670bb69e))
+
 ## [1.2.40](https://github.com/timoa/workflow-editor/compare/v1.2.39...v1.2.40) (2026-03-09)
 
 
