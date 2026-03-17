@@ -1,3 +1,11 @@
+## [1.2.42](https://github.com/timoa/workflow-editor/compare/v1.2.41...v1.2.42) (2026-03-17)
+
+
+### Bug Fixes
+
+* **deps:** fix deps vulnerabilities (flatted, undici, etc.) ([14b7b72](https://github.com/timoa/workflow-editor/commit/14b7b728ef298cbc775b3a25280de68b6807a7e3))
+* **deps:** fix issue with upgrade of ESLint AJV deps ([8b93442](https://github.com/timoa/workflow-editor/commit/8b93442a106518e06f41ea223753b8361267e0cc))
+
 ## [1.2.41](https://github.com/timoa/workflow-editor/compare/v1.2.40...v1.2.41) (2026-03-10)
 
 
