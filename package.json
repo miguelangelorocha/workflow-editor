@@ -119,7 +119,10 @@
       "qs": ">=6.14.2",
       "rollup": ">=4.59.0",
       "@typescript-eslint/typescript-estree>minimatch": ">=9.0.7",
-      "serialize-javascript": ">=7.0.3"
+      "serialize-javascript": ">=7.0.3",
+      "eslint>ajv": "6.14.0",
+      "flatted": ">=3.4.0",
+      "undici": ">=7.24.0"
     },
     "auditConfig": {
       "ignoreGhsas": [
