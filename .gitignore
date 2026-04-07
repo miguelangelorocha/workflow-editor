@@ -148,4 +148,10 @@ vite.config.ts.timestamp-*
 # macos
 .DS_Store
 Thumbs.db
+
+# VSCode settings
 .vscode/settings.json
+
+# Build files
+media/main.js
+media/main.js.map
