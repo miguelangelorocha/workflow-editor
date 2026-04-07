@@ -1,3 +1,10 @@
+## [1.2.43](https://github.com/timoa/workflow-editor/compare/v1.2.42...v1.2.43) (2026-04-07)
+
+
+### Bug Fixes
+
+* **deps:** fix vulnerabilities on Picomatch ([6c2a0e9](https://github.com/timoa/workflow-editor/commit/6c2a0e9eb30cb0d317e741f9310bb63af94c0ab6))
+
 ## [1.2.42](https://github.com/timoa/workflow-editor/compare/v1.2.41...v1.2.42) (2026-03-17)
 
 
