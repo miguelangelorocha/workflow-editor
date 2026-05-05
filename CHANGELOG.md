@@ -1,3 +1,10 @@
+## [1.2.44](https://github.com/timoa/workflow-editor/compare/v1.2.43...v1.2.44) (2026-05-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @actions/workflow-parser to v0.3.53 ([8107a37](https://github.com/timoa/workflow-editor/commit/8107a37134c588317f4f41f3ea72d916dda4b588))
+
 ## [1.2.43](https://github.com/timoa/workflow-editor/compare/v1.2.42...v1.2.43) (2026-04-07)
 
 
